@@ -13,6 +13,9 @@ go run .
 
 Server starts on `http://localhost:8080`.
 
+Images are stored in `data/originals/` and `data/thumbnails/` (auto-created).
+Images are deduplicated by SHA-256 hash — identical images are stored once.
+
 ## Authentication
 
 Protected endpoints require a `Bearer` token in the `Authorization` header:
@@ -91,9 +94,12 @@ Create a new todo item.
 ```json
 {
   "title": "Buy groceries",
-  "description": "Milk, eggs, bread, and butter"
+  "description": "Milk, eggs, bread, and butter",
+  "icon_url": "https://example.com/icon.png"
 }
 ```
+
+The `icon_url` is optional. When provided, the image is downloaded, hashed for deduplication, saved locally, and a thumbnail is generated.
 
 **Response (201):**
 
@@ -103,13 +109,14 @@ Create a new todo item.
   "user_id": 1,
   "title": "Buy groceries",
   "description": "Milk, eggs, bread, and butter",
-  "checked": false
+  "checked": false,
+  "image": "/images/originals/abc123.png"
 }
 ```
 
 **Errors:**
 
-- `400` — missing title
+- `400` — missing title or failed to process icon
 
 ---
 
@@ -128,7 +135,7 @@ List the authenticated user's todos with pagination.
 
 **Response (200):**
 
-Returns only `id`, `title`, and `checked` for each todo (no description or user_id).
+Returns only `id`, `title`, `checked`, and `thumbnail` for each todo (no description, user_id, or full image).
 
 ```json
 {
@@ -136,7 +143,8 @@ Returns only `id`, `title`, and `checked` for each todo (no description or user_
     {
       "id": 1,
       "title": "Buy groceries",
-      "checked": false
+      "checked": false,
+      "thumbnail": "/images/thumbnails/abc123.jpg"
     }
   ],
   "total": 1,
@@ -149,7 +157,7 @@ Returns only `id`, `title`, and `checked` for each todo (no description or user_
 
 ### GET /todos/{id} (Auth required)
 
-Get a single todo with all fields (including description).
+Get a single todo with all fields including description and original image.
 
 **Response (200):**
 
@@ -159,7 +167,8 @@ Get a single todo with all fields (including description).
   "user_id": 1,
   "title": "Buy groceries",
   "description": "Milk, eggs, bread, and butter",
-  "checked": false
+  "checked": false,
+  "image": "/images/originals/abc123.png"
 }
 ```
 
@@ -173,7 +182,7 @@ Get a single todo with all fields (including description).
 ### PATCH /todos/{id} (Auth required)
 
 Update a todo. All fields are optional — only provided fields are changed.
-Can check/uncheck, update title, and update description.
+Can check/uncheck, update title, description, and icon.
 
 **Request:**
 
@@ -181,7 +190,8 @@ Can check/uncheck, update title, and update description.
 {
   "title": "Buy groceries and snacks",
   "description": "Updated list: milk, eggs, chips",
-  "checked": true
+  "checked": true,
+  "icon_url": "https://example.com/new-icon.png"
 }
 ```
 
@@ -193,13 +203,14 @@ Can check/uncheck, update title, and update description.
   "user_id": 1,
   "title": "Buy groceries and snacks",
   "description": "Updated list: milk, eggs, chips",
-  "checked": true
+  "checked": true,
+  "image": "/images/originals/def456.png"
 }
 ```
 
 **Errors:**
 
-- `400` — invalid id or body
+- `400` — invalid id, body, or failed to process icon
 - `404` — todo not found
 
 ---
@@ -220,3 +231,12 @@ Delete a todo item.
 
 - `400` — invalid id
 - `404` — todo not found
+
+---
+
+### GET /images/... (Public)
+
+Static file server for stored images. No authentication required.
+
+- `/images/originals/<hash>.<ext>` — full-size original image
+- `/images/thumbnails/<hash>.jpg` — 150px thumbnail (JPEG)

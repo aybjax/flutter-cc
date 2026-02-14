@@ -14,12 +14,23 @@ type Todo struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Checked     bool   `json:"checked"`
+	IconHash    string `json:"-"`
 }
 
 type TodoSummary struct {
-	ID      int    `json:"id"`
-	Title   string `json:"title"`
-	Checked bool   `json:"checked"`
+	ID        int    `json:"id"`
+	Title     string `json:"title"`
+	Checked   bool   `json:"checked"`
+	Thumbnail string `json:"thumbnail,omitempty"`
+}
+
+type TodoDetail struct {
+	ID          int    `json:"id"`
+	UserID      int    `json:"user_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Checked     bool   `json:"checked"`
+	Image       string `json:"image,omitempty"`
 }
 
 type Store struct {
@@ -54,22 +65,26 @@ func (s *Store) FindUserByEmail(email string) *User {
 	return nil
 }
 
-func (s *Store) CreateTodo(userID int, title, description string) Todo {
+func (s *Store) CreateTodo(userID int, title, description, iconHash string) Todo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	t := Todo{ID: s.nextTID, UserID: userID, Title: title, Description: description}
+	t := Todo{ID: s.nextTID, UserID: userID, Title: title, Description: description, IconHash: iconHash}
 	s.nextTID++
 	s.todos = append(s.todos, t)
 	return t
 }
 
-func (s *Store) GetTodos(userID, page, pageSize int) ([]TodoSummary, int) {
+func (s *Store) GetTodos(userID, page, pageSize int, images *ImageStore) ([]TodoSummary, int) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	var all []TodoSummary
 	for _, t := range s.todos {
 		if t.UserID == userID {
-			all = append(all, TodoSummary{ID: t.ID, Title: t.Title, Checked: t.Checked})
+			summary := TodoSummary{ID: t.ID, Title: t.Title, Checked: t.Checked}
+			if t.IconHash != "" {
+				summary.Thumbnail = images.ThumbnailURL(t.IconHash)
+			}
+			all = append(all, summary)
 		}
 	}
 	total := len(all)
@@ -108,9 +123,10 @@ func (s *Store) DeleteTodo(userID, todoID int) bool {
 }
 
 type TodoUpdate struct {
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Checked     *bool   `json:"checked"`
+	Title       *string
+	Description *string
+	Checked     *bool
+	IconHash    *string
 }
 
 func (s *Store) UpdateTodo(userID, todoID int, upd TodoUpdate) *Todo {
@@ -126,6 +142,9 @@ func (s *Store) UpdateTodo(userID, todoID int, upd TodoUpdate) *Todo {
 			}
 			if upd.Checked != nil {
 				s.todos[i].Checked = *upd.Checked
+			}
+			if upd.IconHash != nil {
+				s.todos[i].IconHash = *upd.IconHash
 			}
 			t := s.todos[i]
 			return &t

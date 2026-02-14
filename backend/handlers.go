@@ -10,11 +10,12 @@ import (
 )
 
 type Server struct {
-	store *Store
+	store  *Store
+	images *ImageStore
 }
 
-func NewServer(store *Store) *Server {
-	return &Server{store: store}
+func NewServer(store *Store, images *ImageStore) *Server {
+	return &Server{store: store, images: images}
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -95,14 +96,32 @@ func (s *Server) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Title       string `json:"title"`
 		Description string `json:"description"`
+		IconURL     string `json:"icon_url"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Title == "" {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "title required"})
 		return
 	}
 
-	todo := s.store.CreateTodo(userID, req.Title, req.Description)
-	writeJSON(w, http.StatusCreated, todo)
+	var iconHash string
+	if req.IconURL != "" {
+		h, err := s.images.ProcessIcon(req.IconURL)
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "failed to process icon: " + err.Error()})
+			return
+		}
+		iconHash = h
+	}
+
+	todo := s.store.CreateTodo(userID, req.Title, req.Description, iconHash)
+	detail := TodoDetail{
+		ID: todo.ID, UserID: todo.UserID,
+		Title: todo.Title, Description: todo.Description, Checked: todo.Checked,
+	}
+	if todo.IconHash != "" {
+		detail.Image = s.images.OriginalURL(todo.IconHash)
+	}
+	writeJSON(w, http.StatusCreated, detail)
 }
 
 func (s *Server) ListTodos(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +138,7 @@ func (s *Server) ListTodos(w http.ResponseWriter, r *http.Request) {
 		pageSize = 10
 	}
 
-	todos, total := s.store.GetTodos(userID, page, pageSize)
+	todos, total := s.store.GetTodos(userID, page, pageSize, s.images)
 	writeJSON(w, http.StatusOK, map[string]any{
 		"todos":     todos,
 		"total":     total,
@@ -144,7 +163,14 @@ func (s *Server) GetTodo(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "todo not found"})
 		return
 	}
-	writeJSON(w, http.StatusOK, todo)
+	detail := TodoDetail{
+		ID: todo.ID, UserID: todo.UserID,
+		Title: todo.Title, Description: todo.Description, Checked: todo.Checked,
+	}
+	if todo.IconHash != "" {
+		detail.Image = s.images.OriginalURL(todo.IconHash)
+	}
+	writeJSON(w, http.StatusOK, detail)
 }
 
 func (s *Server) UpdateTodo(w http.ResponseWriter, r *http.Request) {
@@ -158,10 +184,25 @@ func (s *Server) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var upd TodoUpdate
-	if err := json.NewDecoder(r.Body).Decode(&upd); err != nil {
+	var req struct {
+		Title       *string `json:"title"`
+		Description *string `json:"description"`
+		Checked     *bool   `json:"checked"`
+		IconURL     *string `json:"icon_url"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid body"})
 		return
+	}
+
+	upd := TodoUpdate{Title: req.Title, Description: req.Description, Checked: req.Checked}
+	if req.IconURL != nil {
+		h, err := s.images.ProcessIcon(*req.IconURL)
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "failed to process icon: " + err.Error()})
+			return
+		}
+		upd.IconHash = &h
 	}
 
 	todo := s.store.UpdateTodo(userID, id, upd)
@@ -169,7 +210,14 @@ func (s *Server) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "todo not found"})
 		return
 	}
-	writeJSON(w, http.StatusOK, todo)
+	detail := TodoDetail{
+		ID: todo.ID, UserID: todo.UserID,
+		Title: todo.Title, Description: todo.Description, Checked: todo.Checked,
+	}
+	if todo.IconHash != "" {
+		detail.Image = s.images.OriginalURL(todo.IconHash)
+	}
+	writeJSON(w, http.StatusOK, detail)
 }
 
 func (s *Server) DeleteTodo(w http.ResponseWriter, r *http.Request) {

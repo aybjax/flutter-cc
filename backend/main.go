@@ -8,7 +8,8 @@ import (
 
 func main() {
 	store := NewStore()
-	srv := NewServer(store)
+	images := NewImageStore()
+	srv := NewServer(store, images)
 
 	mux := http.NewServeMux()
 
@@ -22,6 +23,7 @@ func main() {
 	protected.HandleFunc("PATCH /todos/{id}", srv.UpdateTodo)
 	protected.HandleFunc("DELETE /todos/{id}", srv.DeleteTodo)
 
+	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(dataDir))))
 	mux.Handle("/", AuthMiddleware(protected))
 
 	addr := ":8080"
