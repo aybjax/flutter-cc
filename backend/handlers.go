@@ -93,14 +93,15 @@ func (s *Server) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(userIDKey).(int)
 
 	var req struct {
-		Title string `json:"title"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Title == "" {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "title required"})
 		return
 	}
 
-	todo := s.store.CreateTodo(userID, req.Title)
+	todo := s.store.CreateTodo(userID, req.Title, req.Description)
 	writeJSON(w, http.StatusCreated, todo)
 }
 
@@ -108,11 +109,23 @@ func (s *Server) ListTodos(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(2 * time.Second)
 
 	userID := r.Context().Value(userIDKey).(int)
-	todos := s.store.GetTodos(userID)
-	if todos == nil {
-		todos = []Todo{}
+
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page < 1 {
+		page = 1
 	}
-	writeJSON(w, http.StatusOK, todos)
+	pageSize, _ := strconv.Atoi(r.URL.Query().Get("page_size"))
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	todos, total := s.store.GetTodos(userID, page, pageSize)
+	writeJSON(w, http.StatusOK, map[string]any{
+		"todos":     todos,
+		"total":     total,
+		"page":      page,
+		"page_size": pageSize,
+	})
 }
 
 func (s *Server) CheckTodo(w http.ResponseWriter, r *http.Request) {
@@ -132,4 +145,22 @@ func (s *Server) CheckTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, todo)
+}
+
+func (s *Server) DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(2 * time.Second)
+
+	userID := r.Context().Value(userIDKey).(int)
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
+		return
+	}
+
+	if !s.store.DeleteTodo(userID, id) {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "todo not found"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }

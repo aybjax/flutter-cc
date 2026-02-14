@@ -9,10 +9,11 @@ type User struct {
 }
 
 type Todo struct {
-	ID      int    `json:"id"`
-	UserID  int    `json:"user_id"`
-	Title   string `json:"title"`
-	Checked bool   `json:"checked"`
+	ID          int    `json:"id"`
+	UserID      int    `json:"user_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Checked     bool   `json:"checked"`
 }
 
 type Store struct {
@@ -47,25 +48,46 @@ func (s *Store) FindUserByEmail(email string) *User {
 	return nil
 }
 
-func (s *Store) CreateTodo(userID int, title string) Todo {
+func (s *Store) CreateTodo(userID int, title, description string) Todo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	t := Todo{ID: s.nextTID, UserID: userID, Title: title}
+	t := Todo{ID: s.nextTID, UserID: userID, Title: title, Description: description}
 	s.nextTID++
 	s.todos = append(s.todos, t)
 	return t
 }
 
-func (s *Store) GetTodos(userID int) []Todo {
+func (s *Store) GetTodos(userID, page, pageSize int) ([]Todo, int) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	var result []Todo
+	var all []Todo
 	for _, t := range s.todos {
 		if t.UserID == userID {
-			result = append(result, t)
+			all = append(all, t)
 		}
 	}
-	return result
+	total := len(all)
+	start := (page - 1) * pageSize
+	if start >= total {
+		return []Todo{}, total
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	return all[start:end], total
+}
+
+func (s *Store) DeleteTodo(userID, todoID int) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for i := range s.todos {
+		if s.todos[i].ID == todoID && s.todos[i].UserID == userID {
+			s.todos = append(s.todos[:i], s.todos[i+1:]...)
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Store) CheckTodo(userID, todoID int) *Todo {
