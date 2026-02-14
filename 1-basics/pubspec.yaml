@@ -1,0 +1,40 @@
+name: flutter_basics
+description: "A comprehensive Flutter tutorial app that teaches Flutter/Dart through a functional todo client."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Icons for iOS-style widgets (CupertinoIcons.back, etc.)
+  cupertino_icons: ^1.0.8
+
+  # State management: ChangeNotifier + Consumer pattern
+  provider: ^6.1.2
+
+  # HTTP client for REST API calls (get, post, patch, delete)
+  http: ^1.4.0
+
+  # Persistent key-value storage (auth token, theme preference)
+  shared_preferences: ^2.5.3
+
+  # Native file picker dialog (select images for todo icons)
+  file_picker: ^10.1.7
+
+  # GPS location services (permissions + position)
+  geolocator: ^14.0.0
+
+  # Platform-specific directories (documents dir for file downloads)
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
