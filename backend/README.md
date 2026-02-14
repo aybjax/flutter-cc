@@ -128,14 +128,14 @@ List the authenticated user's todos with pagination.
 
 **Response (200):**
 
+Returns only `id`, `title`, and `checked` for each todo (no description or user_id).
+
 ```json
 {
   "todos": [
     {
       "id": 1,
-      "user_id": 1,
       "title": "Buy groceries",
-      "description": "Milk, eggs, bread, and butter",
       "checked": false
     }
   ],
@@ -147,9 +147,9 @@ List the authenticated user's todos with pagination.
 
 ---
 
-### PATCH /todos/{id} (Auth required)
+### GET /todos/{id} (Auth required)
 
-Mark a todo as checked/completed.
+Get a single todo with all fields (including description).
 
 **Response (200):**
 
@@ -159,13 +159,47 @@ Mark a todo as checked/completed.
   "user_id": 1,
   "title": "Buy groceries",
   "description": "Milk, eggs, bread, and butter",
-  "checked": true
+  "checked": false
 }
 ```
 
 **Errors:**
 
 - `400` — invalid id
+- `404` — todo not found
+
+---
+
+### PATCH /todos/{id} (Auth required)
+
+Update a todo. All fields are optional — only provided fields are changed.
+Can check/uncheck, update title, and update description.
+
+**Request:**
+
+```json
+{
+  "title": "Buy groceries and snacks",
+  "description": "Updated list: milk, eggs, chips",
+  "checked": true
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "title": "Buy groceries and snacks",
+  "description": "Updated list: milk, eggs, chips",
+  "checked": true
+}
+```
+
+**Errors:**
+
+- `400` — invalid id or body
 - `404` — todo not found
 
 ---

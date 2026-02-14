@@ -16,6 +16,12 @@ type Todo struct {
 	Checked     bool   `json:"checked"`
 }
 
+type TodoSummary struct {
+	ID      int    `json:"id"`
+	Title   string `json:"title"`
+	Checked bool   `json:"checked"`
+}
+
 type Store struct {
 	mu      sync.RWMutex
 	users   []User
@@ -57,25 +63,36 @@ func (s *Store) CreateTodo(userID int, title, description string) Todo {
 	return t
 }
 
-func (s *Store) GetTodos(userID, page, pageSize int) ([]Todo, int) {
+func (s *Store) GetTodos(userID, page, pageSize int) ([]TodoSummary, int) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	var all []Todo
+	var all []TodoSummary
 	for _, t := range s.todos {
 		if t.UserID == userID {
-			all = append(all, t)
+			all = append(all, TodoSummary{ID: t.ID, Title: t.Title, Checked: t.Checked})
 		}
 	}
 	total := len(all)
 	start := (page - 1) * pageSize
 	if start >= total {
-		return []Todo{}, total
+		return []TodoSummary{}, total
 	}
 	end := start + pageSize
 	if end > total {
 		end = total
 	}
 	return all[start:end], total
+}
+
+func (s *Store) GetTodo(userID, todoID int) *Todo {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	for _, t := range s.todos {
+		if t.ID == todoID && t.UserID == userID {
+			return &t
+		}
+	}
+	return nil
 }
 
 func (s *Store) DeleteTodo(userID, todoID int) bool {
@@ -90,12 +107,26 @@ func (s *Store) DeleteTodo(userID, todoID int) bool {
 	return false
 }
 
-func (s *Store) CheckTodo(userID, todoID int) *Todo {
+type TodoUpdate struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Checked     *bool   `json:"checked"`
+}
+
+func (s *Store) UpdateTodo(userID, todoID int, upd TodoUpdate) *Todo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for i := range s.todos {
 		if s.todos[i].ID == todoID && s.todos[i].UserID == userID {
-			s.todos[i].Checked = true
+			if upd.Title != nil {
+				s.todos[i].Title = *upd.Title
+			}
+			if upd.Description != nil {
+				s.todos[i].Description = *upd.Description
+			}
+			if upd.Checked != nil {
+				s.todos[i].Checked = *upd.Checked
+			}
 			t := s.todos[i]
 			return &t
 		}

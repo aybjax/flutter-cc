@@ -18,7 +18,8 @@ func main() {
 	protected := http.NewServeMux()
 	protected.HandleFunc("POST /todos", srv.CreateTodo)
 	protected.HandleFunc("GET /todos", srv.ListTodos)
-	protected.HandleFunc("PATCH /todos/{id}", srv.CheckTodo)
+	protected.HandleFunc("GET /todos/{id}", srv.GetTodo)
+	protected.HandleFunc("PATCH /todos/{id}", srv.UpdateTodo)
 	protected.HandleFunc("DELETE /todos/{id}", srv.DeleteTodo)
 
 	mux.Handle("/", AuthMiddleware(protected))

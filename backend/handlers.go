@@ -128,7 +128,7 @@ func (s *Server) ListTodos(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (s *Server) CheckTodo(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetTodo(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(2 * time.Second)
 
 	userID := r.Context().Value(userIDKey).(int)
@@ -139,7 +139,32 @@ func (s *Server) CheckTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todo := s.store.CheckTodo(userID, id)
+	todo := s.store.GetTodo(userID, id)
+	if todo == nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "todo not found"})
+		return
+	}
+	writeJSON(w, http.StatusOK, todo)
+}
+
+func (s *Server) UpdateTodo(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(2 * time.Second)
+
+	userID := r.Context().Value(userIDKey).(int)
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
+		return
+	}
+
+	var upd TodoUpdate
+	if err := json.NewDecoder(r.Body).Decode(&upd); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid body"})
+		return
+	}
+
+	todo := s.store.UpdateTodo(userID, id, upd)
 	if todo == nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "todo not found"})
 		return
