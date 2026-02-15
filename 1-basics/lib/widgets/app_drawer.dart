@@ -14,7 +14,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../config/route_names.dart';
 import '../providers/auth_provider.dart';
+import '../providers/todo_provider.dart';
 import '../screens/demos/sliver_demo_screen.dart';
 import '../screens/demos/animation_demo_screen.dart';
 import '../screens/demos/gestures_demo_screen.dart';
@@ -203,7 +205,6 @@ class AppDrawer extends StatelessWidget {
                   title: const Text('About'),
                   onTap: () {
                     Navigator.pop(context);
-                    // showAboutDialog is a built-in Flutter function.
                     showAboutDialog(
                       context: context,
                       applicationName: 'Flutter Basics',
@@ -220,6 +221,40 @@ class AppDrawer extends StatelessWidget {
                         ),
                       ],
                     );
+                  },
+                ),
+
+                // -- Logout --
+                ListTile(
+                  leading: Icon(
+                    Icons.logout,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context); // Close drawer first
+                    final authProvider = Provider.of<AuthProvider>(
+                      context,
+                      listen: false,
+                    );
+                    final todoProvider = Provider.of<TodoProvider>(
+                      context,
+                      listen: false,
+                    );
+                    await authProvider.logout();
+                    todoProvider.clear();
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        RouteNames.login,
+                        (route) => false,
+                      );
+                    }
                   },
                 ),
               ],
