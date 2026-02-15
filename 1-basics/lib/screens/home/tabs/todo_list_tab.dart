@@ -7,6 +7,7 @@
 // - ScrollController — detecting scroll position for infinite scroll
 // - RefreshIndicator — pull-to-refresh gesture
 // - Consumer — rebuilding when provider state changes
+// - Dismissible — swipe-to-delete and swipe-to-complete gestures
 // - Divider — horizontal line between list items
 // - Empty state, loading state, error state handling
 // =============================================================================
@@ -211,25 +212,73 @@ class _TodoListTabState extends State<TodoListTab> {
               }
 
               final todo = todoProvider.todos[index];
-              return TodoListItem(
-                todo: todo,
-                onTap: () {
-                  // Navigate to detail screen, passing the todo id.
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.todoDetail,
-                    arguments: todo.id,
-                  );
-                },
-                onToggle: (_) {
-                  final token = Provider.of<AuthProvider>(
-                    context,
-                    listen: false,
-                  ).token;
-                  if (token != null) {
-                    todoProvider.toggleChecked(token, todo.id, todo.checked);
+              final token = Provider.of<AuthProvider>(
+                context,
+                listen: false,
+              ).token;
+
+              // Dismissible adds swipe gestures to its child.
+              // - Swipe left (endToStart) → delete
+              // - Swipe right (startToEnd) → mark as checked
+              //
+              // Each Dismissible needs a unique Key so Flutter can
+              // track which item was dismissed in the list.
+              return Dismissible(
+                key: ValueKey(todo.id),
+
+                // -- Swipe right: mark as checked --
+                // background is shown when swiping startToEnd (left→right).
+                background: Container(
+                  color: Colors.green,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(left: 24),
+                  child: const Icon(Icons.check, color: Colors.white),
+                ),
+
+                // -- Swipe left: delete --
+                // secondaryBackground is shown when swiping endToStart (right→left).
+                secondaryBackground: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 24),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+
+                // confirmDismiss lets you control what happens on each direction.
+                // Return true to remove the item, false to snap it back.
+                confirmDismiss: (direction) async {
+                  if (token == null) return false;
+
+                  if (direction == DismissDirection.startToEnd) {
+                    // Swipe right → toggle checked to true.
+                    // Don't dismiss (remove from list) — just mark checked.
+                    if (!todo.checked) {
+                      todoProvider.toggleChecked(token, todo.id, todo.checked);
+                    }
+                    return false; // Snap back, don't remove
+                  } else {
+                    // Swipe left → delete.
+                    final success =
+                        await todoProvider.deleteTodo(token, todo.id);
+                    return success; // Remove from list if deletion succeeded
                   }
                 },
+
+                child: TodoListItem(
+                  todo: todo,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      RouteNames.todoDetail,
+                      arguments: todo.id,
+                    );
+                  },
+                  onToggle: (_) {
+                    if (token != null) {
+                      todoProvider.toggleChecked(token, todo.id, todo.checked);
+                    }
+                  },
+                ),
               );
             },
           ),

@@ -105,7 +105,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Consumer<AuthProvider>(
+          // Center + ConstrainedBox limits the form width on wide screens
+          // (e.g., macOS, tablets, web).
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return LoadingOverlay(
                 isLoading: authProvider.isLoading,
@@ -285,6 +290,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               );
             },
+          ),
+            ),
           ),
         ),
       ),

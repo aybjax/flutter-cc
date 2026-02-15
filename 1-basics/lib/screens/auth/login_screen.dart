@@ -131,7 +131,13 @@ class _LoginScreenState extends State<LoginScreen> {
         // would show a yellow/black overflow stripe.
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Consumer<AuthProvider>(
+          // Center + ConstrainedBox limits the form width on wide screens
+          // (e.g., macOS, tablets, web). Without this, fields stretch
+          // edge-to-edge which looks bad on large displays.
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return LoadingOverlay(
                 isLoading: authProvider.isLoading,
@@ -347,6 +353,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               );
             },
+          ),
+            ),
           ),
         ),
       ),
