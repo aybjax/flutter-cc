@@ -1,0 +1,93 @@
+{
+  "@@locale": "en",
+  "appTitle": "News Reader",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "articlesCount": "{count, plural, =0{No articles} =1{1 article} other{{count} articles}}",
+  "@articlesCount": {
+    "description": "Shows the number of articles with plural support",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categories": "Categories",
+  "@categories": {
+    "description": "Categories screen title"
+  },
+  "articles": "Articles",
+  "@articles": {
+    "description": "Articles screen title"
+  },
+  "search": "Search articles...",
+  "@search": {
+    "description": "Search field placeholder"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button label"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button label"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "defaultNav": "Navigator",
+  "@defaultNav": {
+    "description": "Tab label for default Navigator approach"
+  },
+  "goRouterNav": "GoRouter",
+  "@goRouterNav": {
+    "description": "Tab label for GoRouter approach"
+  },
+  "autoRouteNav": "AutoRoute",
+  "@autoRouteNav": {
+    "description": "Tab label for auto_route approach"
+  },
+  "readMore": "Read More",
+  "@readMore": {
+    "description": "Button to read full article"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button label"
+  },
+  "noResults": "No articles found",
+  "@noResults": {
+    "description": "Empty search results message"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language selector label"
+  },
+  "loginRequired": "Please log in to access this page",
+  "@loginRequired": {
+    "description": "Message shown when auth is required"
+  },
+  "welcomeBack": "Welcome back, {name}!",
+  "@welcomeBack": {
+    "description": "Greeting after login",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}
