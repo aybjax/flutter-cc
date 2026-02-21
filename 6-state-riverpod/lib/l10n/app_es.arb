@@ -1,0 +1,47 @@
+{
+  "@@locale": "es",
+  "appTitle": "Panel del Clima",
+  "search": "Buscar",
+  "searchCity": "Buscar una ciudad...",
+  "favorites": "Favoritos",
+  "settings": "Configuraci\u00f3n",
+  "temperatureUnit": "Unidad de Temperatura",
+  "celsius": "Celsius",
+  "fahrenheit": "Fahrenheit",
+  "currentWeather": "Clima Actual",
+  "forecast": "Pron\u00f3stico de 5 D\u00edas",
+  "humidity": "Humedad",
+  "windSpeed": "Velocidad del Viento",
+  "feelsLike": "Sensaci\u00f3n T\u00e9rmica",
+  "noFavorites": "A\u00fan no hay ciudades favoritas",
+  "addToFavorites": "A\u00f1adir a Favoritos",
+  "removeFromFavorites": "Quitar de Favoritos",
+  "cityNotFound": "Ciudad no encontrada",
+  "networkError": "Error de red",
+  "unknownError": "Ocurri\u00f3 un error desconocido",
+  "retry": "Reintentar",
+  "loading": "Cargando...",
+  "language": "Idioma",
+  "english": "Ingl\u00e9s",
+  "spanish": "Espa\u00f1ol",
+  "today": "Hoy",
+  "temperatureWithUnit": "{temp}\u00b0{unit}",
+  "@temperatureWithUnit": {
+    "placeholders": {
+      "temp": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "weatherIn": "Clima en {city}",
+  "@weatherIn": {
+    "placeholders": {
+      "city": { "type": "String" }
+    }
+  },
+  "lastUpdated": "\u00daltima actualizaci\u00f3n: {time}",
+  "@lastUpdated": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  }
+}

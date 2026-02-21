@@ -1,0 +1,47 @@
+{
+  "@@locale": "en",
+  "appTitle": "Weather Dashboard",
+  "search": "Search",
+  "searchCity": "Search for a city...",
+  "favorites": "Favorites",
+  "settings": "Settings",
+  "temperatureUnit": "Temperature Unit",
+  "celsius": "Celsius",
+  "fahrenheit": "Fahrenheit",
+  "currentWeather": "Current Weather",
+  "forecast": "5-Day Forecast",
+  "humidity": "Humidity",
+  "windSpeed": "Wind Speed",
+  "feelsLike": "Feels Like",
+  "noFavorites": "No favorite cities yet",
+  "addToFavorites": "Add to Favorites",
+  "removeFromFavorites": "Remove from Favorites",
+  "cityNotFound": "City not found",
+  "networkError": "Network error occurred",
+  "unknownError": "An unknown error occurred",
+  "retry": "Retry",
+  "loading": "Loading...",
+  "language": "Language",
+  "english": "English",
+  "spanish": "Spanish",
+  "today": "Today",
+  "temperatureWithUnit": "{temp}\u00b0{unit}",
+  "@temperatureWithUnit": {
+    "placeholders": {
+      "temp": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "weatherIn": "Weather in {city}",
+  "@weatherIn": {
+    "placeholders": {
+      "city": { "type": "String" }
+    }
+  },
+  "lastUpdated": "Last updated: {time}",
+  "@lastUpdated": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  }
+}
