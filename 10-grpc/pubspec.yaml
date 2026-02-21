@@ -1,0 +1,35 @@
+name: grpc_tutorial
+description: "A Task Board (Kanban) app using gRPC for client-server communication."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  dartz: ^0.10.1
+  intl: ^0.20.2
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  grpc: ^4.0.1
+  protobuf: ^3.1.0
+  flutter_bloc: ^9.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.8
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
+
+flutter:
+  generate: true
+  uses-material-design: true
