@@ -1,0 +1,141 @@
+{
+  "@@locale": "en",
+  "appTitle": "Todo App",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "todosCount": "{count, plural, =0{No todos} =1{1 todo} other{{count} todos}}",
+  "@todosCount": {
+    "description": "Shows the number of todos with plural support",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button and screen title"
+  },
+  "register": "Register",
+  "@register": {
+    "description": "Register button and screen title"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button label"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Label for email field"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Label for password field"
+  },
+  "noAccount": "Don't have an account? Register",
+  "@noAccount": {
+    "description": "Link to registration screen"
+  },
+  "hasAccount": "Already have an account? Login",
+  "@hasAccount": {
+    "description": "Link to login screen"
+  },
+  "addTodo": "Add Todo",
+  "@addTodo": {
+    "description": "Button label to add a new todo"
+  },
+  "editTodo": "Edit Todo",
+  "@editTodo": {
+    "description": "Title for edit todo screen"
+  },
+  "deleteTodo": "Delete Todo",
+  "@deleteTodo": {
+    "description": "Button label to delete a todo"
+  },
+  "confirmDelete": "Are you sure you want to delete \"{title}\"?",
+  "@confirmDelete": {
+    "description": "Confirmation dialog message for deleting a todo",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "title": "Title",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Label for description field"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button label"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button label"
+  },
+  "noTodosYet": "No todos yet. Tap + to add one!",
+  "@noTodosYet": {
+    "description": "Empty state message"
+  },
+  "todoSaved": "Todo saved successfully!",
+  "@todoSaved": {
+    "description": "Snackbar message after saving"
+  },
+  "todoDeleted": "Todo deleted",
+  "@todoDeleted": {
+    "description": "Snackbar message after deleting"
+  },
+  "errorRequired": "This field is required",
+  "@errorRequired": {
+    "description": "Validation error for empty required fields"
+  },
+  "errorInvalidEmail": "Please enter a valid email",
+  "@errorInvalidEmail": {
+    "description": "Validation error for malformed email"
+  },
+  "errorNetwork": "Network error. Please check your connection.",
+  "@errorNetwork": {
+    "description": "Network error message"
+  },
+  "errorServer": "Server error. Please try again later.",
+  "@errorServer": {
+    "description": "Server error message"
+  },
+  "errorUnauthorized": "Session expired. Please login again.",
+  "@errorUnauthorized": {
+    "description": "Unauthorized error message"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Label for language selector"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button label"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  "todoDetail": "Todo Detail",
+  "@todoDetail": {
+    "description": "Title for todo detail screen"
+  },
+  "checked": "Completed",
+  "@checked": {
+    "description": "Label for completed status"
+  },
+  "unchecked": "Pending",
+  "@unchecked": {
+    "description": "Label for pending status"
+  }
+}

@@ -1,0 +1,60 @@
+name: state_cubit_tutorial
+description: "A Todo app teaching Cubit state management with freezed, dartz, and flutter_bloc."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --- Localization (l10n) ---
+  # flutter_localizations provides Material/Cupertino translations
+  flutter_localizations:
+    sdk: flutter
+  # intl provides Intl.message(), Intl.plural(), date/number formatting
+  intl: ^0.20.2
+
+  # --- Functional programming ---
+  # dartz provides Either, Option, and other FP types for error handling
+  dartz: ^0.10.1
+
+  # --- Code generation annotations (used at compile-time) ---
+  # freezed_annotation: @freezed, @Default, @JsonKey markers
+  freezed_annotation: ^2.4.1
+  # json_annotation: @JsonSerializable, @JsonKey markers
+  json_annotation: ^4.8.1
+
+  # --- State management ---
+  # flutter_bloc provides BlocProvider, BlocBuilder, BlocListener, BlocConsumer
+  flutter_bloc: ^9.0.0
+
+  # --- Networking ---
+  # http for making REST API calls to the Go backend
+  http: ^1.4.0
+
+  # --- UI ---
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # --- Code generation (runs via build_runner) ---
+  # build_runner: the engine that reads annotations and runs generators
+  build_runner: ^2.4.8
+  # freezed: generates copyWith, ==, hashCode, union types from @freezed
+  freezed: ^2.4.7
+  # json_serializable: generates fromJson/toJson from @JsonSerializable
+  json_serializable: ^6.7.1
+
+  # --- Testing ---
+  # bloc_test: provides blocTest() for testing Cubits and Blocs
+  bloc_test: ^10.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
