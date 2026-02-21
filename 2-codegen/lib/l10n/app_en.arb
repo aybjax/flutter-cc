@@ -1,0 +1,117 @@
+{
+  "@@locale": "en",
+  "appTitle": "Contact Book",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "contactsCount": "{count, plural, =0{No contacts} =1{1 contact} other{{count} contacts}}",
+  "@contactsCount": {
+    "description": "Shows the number of contacts with plural support",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addContact": "Add Contact",
+  "@addContact": {
+    "description": "Button label to add a new contact"
+  },
+  "editContact": "Edit Contact",
+  "@editContact": {
+    "description": "Title for edit contact screen"
+  },
+  "deleteContact": "Delete Contact",
+  "@deleteContact": {
+    "description": "Button label to delete a contact"
+  },
+  "confirmDelete": "Are you sure you want to delete {name}?",
+  "@confirmDelete": {
+    "description": "Confirmation dialog message for deleting a contact",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Name",
+  "@name": {
+    "description": "Label for name field"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Label for email field"
+  },
+  "phone": "Phone",
+  "@phone": {
+    "description": "Label for phone field"
+  },
+  "notes": "Notes",
+  "@notes": {
+    "description": "Label for notes field"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button label"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button label"
+  },
+  "search": "Search contacts...",
+  "@search": {
+    "description": "Search field placeholder"
+  },
+  "noContactsYet": "No contacts yet. Tap + to add one!",
+  "@noContactsYet": {
+    "description": "Empty state message"
+  },
+  "contactSaved": "Contact saved successfully!",
+  "@contactSaved": {
+    "description": "Snackbar message after saving"
+  },
+  "contactDeleted": "Contact deleted",
+  "@contactDeleted": {
+    "description": "Snackbar message after deleting"
+  },
+  "errorRequired": "This field is required",
+  "@errorRequired": {
+    "description": "Validation error for empty required fields"
+  },
+  "errorInvalidEmail": "Please enter a valid email",
+  "@errorInvalidEmail": {
+    "description": "Validation error for malformed email"
+  },
+  "categoryFamily": "Family",
+  "@categoryFamily": {
+    "description": "Contact category: Family"
+  },
+  "categoryFriend": "Friend",
+  "@categoryFriend": {
+    "description": "Contact category: Friend"
+  },
+  "categoryWork": "Work",
+  "@categoryWork": {
+    "description": "Contact category: Work"
+  },
+  "categoryOther": "Other",
+  "@categoryOther": {
+    "description": "Contact category: Other"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Label for language selector"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites tab label"
+  },
+  "all": "All",
+  "@all": {
+    "description": "All contacts tab label"
+  }
+}
