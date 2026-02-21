@@ -1,0 +1,63 @@
+{
+  "@@locale": "es",
+  "appTitle": "Rastreador Financiero",
+  "dashboard": "Panel",
+  "expenses": "Gastos",
+  "categories": "Categorias",
+  "budgets": "Presupuestos",
+  "settings": "Configuracion",
+  "addExpense": "Agregar Gasto",
+  "editExpense": "Editar Gasto",
+  "deleteExpense": "Eliminar Gasto",
+  "expenseTitle": "Titulo",
+  "expenseAmount": "Monto",
+  "expenseDate": "Fecha",
+  "expenseCategory": "Categoria",
+  "expenseNotes": "Notas",
+  "save": "Guardar",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "confirmDelete": "Esta seguro que desea eliminar esto?",
+  "totalExpenses": "Gastos Totales",
+  "monthlyBudget": "Presupuesto Mensual",
+  "remaining": "Restante",
+  "spent": "Gastado",
+  "currency": "Moneda",
+  "theme": "Tema",
+  "darkMode": "Modo Oscuro",
+  "dateFormat": "Formato de Fecha",
+  "language": "Idioma",
+  "noExpenses": "Sin gastos aun. Toca + para agregar uno!",
+  "noCategories": "Sin categorias aun. Agrega una para comenzar!",
+  "addCategory": "Agregar Categoria",
+  "editCategory": "Editar Categoria",
+  "categoryName": "Nombre de Categoria",
+  "categoryColor": "Color",
+  "categoryIcon": "Icono",
+  "budgetAmount": "Monto del Presupuesto",
+  "budgetPeriod": "Periodo del Presupuesto",
+  "monthly": "Mensual",
+  "weekly": "Semanal",
+  "yearly": "Anual",
+  "overBudget": "Sobre Presupuesto!",
+  "underBudget": "Bajo Presupuesto",
+  "expenseCount": "{count, plural, =0{Sin gastos} =1{1 gasto} other{{count} gastos}}",
+  "@expenseCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "amountFormatted": "{currency}{amount}",
+  "@amountFormatted": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
+}

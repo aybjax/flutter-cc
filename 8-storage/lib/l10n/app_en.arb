@@ -1,0 +1,66 @@
+{
+  "@@locale": "en",
+  "appTitle": "Finance Tracker",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "dashboard": "Dashboard",
+  "expenses": "Expenses",
+  "categories": "Categories",
+  "budgets": "Budgets",
+  "settings": "Settings",
+  "addExpense": "Add Expense",
+  "editExpense": "Edit Expense",
+  "deleteExpense": "Delete Expense",
+  "expenseTitle": "Title",
+  "expenseAmount": "Amount",
+  "expenseDate": "Date",
+  "expenseCategory": "Category",
+  "expenseNotes": "Notes",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "confirmDelete": "Are you sure you want to delete this?",
+  "totalExpenses": "Total Expenses",
+  "monthlyBudget": "Monthly Budget",
+  "remaining": "Remaining",
+  "spent": "Spent",
+  "currency": "Currency",
+  "theme": "Theme",
+  "darkMode": "Dark Mode",
+  "dateFormat": "Date Format",
+  "language": "Language",
+  "noExpenses": "No expenses yet. Tap + to add one!",
+  "noCategories": "No categories yet. Add one to get started!",
+  "addCategory": "Add Category",
+  "editCategory": "Edit Category",
+  "categoryName": "Category Name",
+  "categoryColor": "Color",
+  "categoryIcon": "Icon",
+  "budgetAmount": "Budget Amount",
+  "budgetPeriod": "Budget Period",
+  "monthly": "Monthly",
+  "weekly": "Weekly",
+  "yearly": "Yearly",
+  "overBudget": "Over Budget!",
+  "underBudget": "Under Budget",
+  "expenseCount": "{count, plural, =0{No expenses} =1{1 expense} other{{count} expenses}}",
+  "@expenseCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "amountFormatted": "{currency}{amount}",
+  "@amountFormatted": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
+}
