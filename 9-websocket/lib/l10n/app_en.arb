@@ -1,0 +1,57 @@
+{
+  "@@locale": "en",
+  "appTitle": "Live Chat",
+  "@appTitle": { "description": "The application title" },
+  "enterUsername": "Enter your username",
+  "@enterUsername": { "description": "Username input label" },
+  "usernameHint": "Username",
+  "@usernameHint": { "description": "Username text field hint" },
+  "joinChat": "Join Chat",
+  "@joinChat": { "description": "Button to join the chat" },
+  "chatRooms": "Chat Rooms",
+  "@chatRooms": { "description": "Title of the room list screen" },
+  "onlineUsers": "Online Users",
+  "@onlineUsers": { "description": "Label for online users section" },
+  "typeMessage": "Type a message...",
+  "@typeMessage": { "description": "Chat input hint text" },
+  "send": "Send",
+  "@send": { "description": "Send button label" },
+  "typing": "{user} is typing...",
+  "@typing": {
+    "description": "Typing indicator text",
+    "placeholders": {
+      "user": { "type": "String" }
+    }
+  },
+  "userJoined": "{user} joined the room",
+  "@userJoined": {
+    "description": "Join notification",
+    "placeholders": {
+      "user": { "type": "String" }
+    }
+  },
+  "userLeft": "{user} left the room",
+  "@userLeft": {
+    "description": "Leave notification",
+    "placeholders": {
+      "user": { "type": "String" }
+    }
+  },
+  "connecting": "Connecting...",
+  "@connecting": { "description": "Connection status" },
+  "connected": "Connected",
+  "@connected": { "description": "Connection status" },
+  "disconnected": "Disconnected",
+  "@disconnected": { "description": "Connection status" },
+  "reconnecting": "Reconnecting...",
+  "@reconnecting": { "description": "Connection status" },
+  "usernameRequired": "Username is required",
+  "@usernameRequired": { "description": "Validation error" },
+  "members": "{count} members",
+  "@members": {
+    "description": "Member count label",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+}

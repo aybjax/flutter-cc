@@ -1,0 +1,20 @@
+{
+  "@@locale": "es",
+  "appTitle": "Chat en Vivo",
+  "enterUsername": "Ingresa tu nombre de usuario",
+  "usernameHint": "Nombre de usuario",
+  "joinChat": "Unirse al Chat",
+  "chatRooms": "Salas de Chat",
+  "onlineUsers": "Usuarios en Linea",
+  "typeMessage": "Escribe un mensaje...",
+  "send": "Enviar",
+  "typing": "{user} esta escribiendo...",
+  "userJoined": "{user} se unio a la sala",
+  "userLeft": "{user} salio de la sala",
+  "connecting": "Conectando...",
+  "connected": "Conectado",
+  "disconnected": "Desconectado",
+  "reconnecting": "Reconectando...",
+  "usernameRequired": "El nombre de usuario es obligatorio",
+  "members": "{count} miembros"
+}
