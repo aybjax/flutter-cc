@@ -1,0 +1,113 @@
+// =============================================================================
+// taskboard.proto — Protocol Buffer definitions for the Task Board gRPC service
+// =============================================================================
+//
+// This file defines the service contract between the Flutter client and the
+// Go server. It uses proto3 syntax.
+//
+// To generate Go code:
+//   protoc --go_out=. --go-grpc_out=. proto/taskboard.proto
+//
+// To generate Dart code:
+//   protoc --dart_out=grpc:lib/proto proto/taskboard.proto
+// =============================================================================
+
+syntax = "proto3";
+
+package taskboard;
+
+option go_package = "backend-grpc/pb";
+
+// =============================================================================
+// Messages
+// =============================================================================
+
+// Board represents a Kanban board containing multiple columns.
+message Board {
+  string id = 1;
+  string name = 2;
+  repeated Column columns = 3;
+}
+
+// Column represents a lane/stage in the Kanban board (e.g., "To Do", "In Progress").
+message Column {
+  string id = 1;
+  string name = 2;
+  int32 position = 3;
+  repeated Card cards = 4;
+}
+
+// Card represents a task/work item that lives in a column.
+message Card {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string column_id = 4;
+  int32 position = 5;
+}
+
+// Empty is used for RPCs that don't require input or output data.
+message Empty {}
+
+// BoardList wraps a list of boards for the GetBoards response.
+message BoardList {
+  repeated Board boards = 1;
+}
+
+// BoardRequest identifies a specific board by ID.
+message BoardRequest {
+  string board_id = 1;
+}
+
+// CreateCardRequest contains all the data needed to create a new card.
+message CreateCardRequest {
+  string board_id = 1;
+  string column_id = 2;
+  string title = 3;
+  string description = 4;
+}
+
+// MoveCardRequest describes a card move operation (column and/or position change).
+message MoveCardRequest {
+  string card_id = 1;
+  string target_column_id = 2;
+  int32 target_position = 3;
+}
+
+// DeleteCardRequest identifies which card to remove.
+message DeleteCardRequest {
+  string card_id = 1;
+}
+
+// BoardUpdate is streamed to clients watching a board for real-time changes.
+message BoardUpdate {
+  // type indicates what changed: "card_created", "card_moved", "card_deleted"
+  string type = 1;
+  Board board = 2;
+}
+
+// =============================================================================
+// Service
+// =============================================================================
+
+// TaskBoardService provides all the RPCs for managing Kanban boards.
+service TaskBoardService {
+  // GetBoards returns all available boards (unary).
+  rpc GetBoards(Empty) returns (BoardList);
+
+  // GetBoard returns a single board with all its columns and cards (unary).
+  rpc GetBoard(BoardRequest) returns (Board);
+
+  // CreateCard adds a new card to a column on a board (unary).
+  rpc CreateCard(CreateCardRequest) returns (Card);
+
+  // MoveCard relocates a card to a different column/position (unary).
+  rpc MoveCard(MoveCardRequest) returns (Card);
+
+  // DeleteCard removes a card from the board (unary).
+  rpc DeleteCard(DeleteCardRequest) returns (Empty);
+
+  // WatchBoard opens a server-streaming connection that pushes BoardUpdate
+  // messages whenever the board changes.
+  rpc WatchBoard(BoardRequest) returns (stream BoardUpdate);
+}
