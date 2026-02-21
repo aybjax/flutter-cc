@@ -1,0 +1,85 @@
+# =============================================================================
+# Android Fastlane Fastfile
+# Purpose: Defines lanes for building and deploying each flavor to the
+#          Google Play Store.
+# =============================================================================
+
+default_platform(:android)
+
+platform :android do
+
+  # ---------------------------------------------------------------------------
+  # Before all — shared setup
+  # ---------------------------------------------------------------------------
+  before_all do
+    # Ensure we're on a clean git state before building
+    # ensure_git_status_clean
+  end
+
+  # ---------------------------------------------------------------------------
+  # Build lanes — one per flavor
+  # ---------------------------------------------------------------------------
+
+  desc "Build the DEV flavor APK"
+  lane :build_dev do
+    # Flutter build with the dev flavor
+    sh("cd ../.. && flutter build apk --flavor dev -t lib/main_dev.dart --debug")
+  end
+
+  desc "Build the STAGING flavor APK"
+  lane :build_staging do
+    sh("cd ../.. && flutter build apk --flavor staging -t lib/main_staging.dart --release")
+  end
+
+  desc "Build the PRODUCTION flavor App Bundle for Play Store"
+  lane :build_prod do
+    # Use app bundle (aab) for Play Store submission
+    sh("cd ../.. && flutter build appbundle --flavor production -t lib/main_production.dart --release")
+
+    # Alternative: build APK instead of AAB
+    # sh("cd ../.. && flutter build apk --flavor production -t lib/main_production.dart --release")
+  end
+
+  # ---------------------------------------------------------------------------
+  # Deploy lane — upload to Google Play Store
+  # ---------------------------------------------------------------------------
+
+  desc "Deploy production build to Google Play Store internal track"
+  lane :deploy_play_store do
+    # First build the production app bundle
+    build_prod
+
+    # Upload to the Play Store internal testing track
+    # Requires json_key_file in Appfile to be configured
+    #
+    # supply(
+    #   track: "internal",                    # internal, alpha, beta, or production
+    #   aab: "../build/app/outputs/bundle/productionRelease/app-production-release.aab",
+    #   package_name: "com.example.fastlane_tutorial",
+    #   skip_upload_metadata: true,
+    #   skip_upload_images: true,
+    #   skip_upload_screenshots: true,
+    # )
+
+    # Alternative: promote from internal to production
+    # supply(
+    #   track: "internal",
+    #   track_promote_to: "production",
+    #   skip_upload_aab: true,
+    # )
+  end
+
+  # ---------------------------------------------------------------------------
+  # Utility lanes
+  # ---------------------------------------------------------------------------
+
+  desc "Run Flutter tests"
+  lane :test do
+    sh("cd ../.. && flutter test")
+  end
+
+  desc "Run Flutter analyze"
+  lane :lint do
+    sh("cd ../.. && flutter analyze")
+  end
+end

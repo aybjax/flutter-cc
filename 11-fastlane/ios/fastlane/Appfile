@@ -1,0 +1,31 @@
+# =============================================================================
+# iOS Fastlane Appfile
+# Purpose: Identifies the app and Apple account for App Store deployment.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# App identifier — the bundle ID registered in Apple Developer Portal
+# ---------------------------------------------------------------------------
+app_identifier("com.example.fastlaneTutorial")
+
+# ---------------------------------------------------------------------------
+# Apple ID credentials
+# ---------------------------------------------------------------------------
+# The Apple ID email used for App Store Connect.
+# Best practice: use a shared team Apple ID, not a personal one.
+#
+# apple_id("your-apple-id@example.com")
+
+# Alternative: use environment variable for CI
+# apple_id(ENV["APPLE_ID"])
+
+# ---------------------------------------------------------------------------
+# Team configuration
+# ---------------------------------------------------------------------------
+# If your Apple ID belongs to multiple teams, specify which one to use.
+#
+# team_id("XXXXXXXXXX")              # Apple Developer Portal Team ID
+# itc_team_id("XXXXXXXXXX")          # App Store Connect Team ID
+
+# Alternative: use team name instead of ID
+# team_name("Your Company Name")

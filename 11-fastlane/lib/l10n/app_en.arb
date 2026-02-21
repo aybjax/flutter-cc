@@ -1,0 +1,35 @@
+{
+  "@@locale": "en",
+  "appTitle": "Fastlane Tutorial",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "environmentLabel": "Environment",
+  "@environmentLabel": {
+    "description": "Label for the environment section"
+  },
+  "flavorLabel": "Flavor",
+  "@flavorLabel": {
+    "description": "Label for the build flavor"
+  },
+  "apiUrlLabel": "API URL",
+  "@apiUrlLabel": {
+    "description": "Label for the API URL"
+  },
+  "versionLabel": "Version",
+  "@versionLabel": {
+    "description": "Label for the version info"
+  },
+  "appNameLabel": "App Name",
+  "@appNameLabel": {
+    "description": "Label for the app name"
+  },
+  "buildModeLabel": "Build Mode",
+  "@buildModeLabel": {
+    "description": "Label for the build mode (debug/profile/release)"
+  },
+  "configurationTitle": "Configuration Details",
+  "@configurationTitle": {
+    "description": "Title for the configuration section"
+  }
+}

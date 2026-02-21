@@ -1,0 +1,11 @@
+{
+  "@@locale": "es",
+  "appTitle": "Tutorial de Fastlane",
+  "environmentLabel": "Entorno",
+  "flavorLabel": "Variante",
+  "apiUrlLabel": "URL de API",
+  "versionLabel": "Version",
+  "appNameLabel": "Nombre de la App",
+  "buildModeLabel": "Modo de Compilacion",
+  "configurationTitle": "Detalles de Configuracion"
+}

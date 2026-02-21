@@ -1,0 +1,142 @@
+# =============================================================================
+# iOS Fastlane Fastfile
+# Purpose: Defines lanes for building and deploying each flavor to
+#          TestFlight and the App Store.
+# =============================================================================
+
+default_platform(:ios)
+
+platform :ios do
+
+  # ---------------------------------------------------------------------------
+  # Before all — shared setup
+  # ---------------------------------------------------------------------------
+  before_all do
+    # Ensure we're on a clean git state before building
+    # ensure_git_status_clean
+
+    # Set up code signing with match (recommended for teams and CI)
+    # match(type: "appstore", readonly: true)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Code Signing — match setup
+  # ---------------------------------------------------------------------------
+
+  desc "Sync code signing certificates and profiles using match"
+  lane :sync_signing do
+    # match creates and manages certificates and provisioning profiles
+    # in a private Git repo for the whole team.
+    #
+    # First time setup:
+    #   fastlane match init
+    #
+    # match(
+    #   type: "development",    # development, adhoc, appstore, or enterprise
+    #   app_identifier: "com.example.fastlaneTutorial",
+    #   readonly: false,        # set to true on CI to avoid creating new profiles
+    # )
+
+    # Alternative: use cert and sigh directly instead of match
+    # cert
+    # sigh(force: true)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Build lanes — one per flavor/scheme
+  # ---------------------------------------------------------------------------
+
+  desc "Build the DEV flavor IPA"
+  lane :build_dev do
+    # Flutter build for iOS with dev flavor
+    sh("cd ../.. && flutter build ios --flavor dev -t lib/main_dev.dart --debug --no-codesign")
+
+    # Alternative: use gym (build_app) for more control
+    # build_app(
+    #   workspace: "Runner.xcworkspace",
+    #   scheme: "dev",
+    #   configuration: "Debug-dev",
+    #   export_method: "development",
+    #   output_directory: "./build",
+    #   output_name: "FastlaneDev.ipa",
+    # )
+  end
+
+  desc "Build the STAGING flavor IPA"
+  lane :build_staging do
+    sh("cd ../.. && flutter build ios --flavor staging -t lib/main_staging.dart --release --no-codesign")
+
+    # build_app(
+    #   workspace: "Runner.xcworkspace",
+    #   scheme: "staging",
+    #   configuration: "Release-staging",
+    #   export_method: "ad-hoc",
+    #   output_directory: "./build",
+    #   output_name: "FastlaneStaging.ipa",
+    # )
+  end
+
+  desc "Build the PRODUCTION flavor IPA"
+  lane :build_prod do
+    sh("cd ../.. && flutter build ios --flavor production -t lib/main_production.dart --release --no-codesign")
+
+    # build_app(
+    #   workspace: "Runner.xcworkspace",
+    #   scheme: "production",
+    #   configuration: "Release-production",
+    #   export_method: "app-store",
+    #   output_directory: "./build",
+    #   output_name: "FastlaneTutorial.ipa",
+    # )
+  end
+
+  # ---------------------------------------------------------------------------
+  # Deploy lanes
+  # ---------------------------------------------------------------------------
+
+  desc "Deploy production build to TestFlight"
+  lane :deploy_testflight do
+    # Build the production IPA
+    build_prod
+
+    # Upload to TestFlight using pilot
+    # Requires Apple ID credentials configured in Appfile
+    #
+    # pilot(
+    #   ipa: "./build/FastlaneTutorial.ipa",
+    #   skip_waiting_for_build_processing: true,
+    #   distribute_external: false,
+    #   notify_external_testers: false,
+    #   changelog: "New build from Fastlane",
+    # )
+
+    # Alternative: upload to App Store directly (skip TestFlight)
+    # deliver(
+    #   ipa: "./build/FastlaneTutorial.ipa",
+    #   submit_for_review: false,
+    #   automatic_release: false,
+    #   force: true,
+    # )
+  end
+
+  # ---------------------------------------------------------------------------
+  # Utility lanes
+  # ---------------------------------------------------------------------------
+
+  desc "Run Flutter tests"
+  lane :test do
+    sh("cd ../.. && flutter test")
+  end
+
+  desc "Run Flutter analyze"
+  lane :lint do
+    sh("cd ../.. && flutter analyze")
+  end
+
+  desc "Increment build number"
+  lane :bump_build do
+    # increment_build_number(
+    #   xcodeproj: "Runner.xcodeproj",
+    # )
+  end
+end

@@ -1,0 +1,22 @@
+# =============================================================================
+# Android Fastlane Appfile
+# Purpose: Identifies the app and credentials for Google Play Store deployment.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Package name — must match applicationId in build.gradle.kts
+# ---------------------------------------------------------------------------
+# For production builds (no suffix):
+package_name("com.example.fastlane_tutorial")
+
+# ---------------------------------------------------------------------------
+# Google Play Store credentials
+# ---------------------------------------------------------------------------
+# Path to the JSON key file for authenticating with the Google Play Developer API.
+# Generate this in the Google Cloud Console under Service Accounts.
+# See: https://docs.fastlane.tools/actions/supply/#setup
+#
+# json_key_file("path/to/google-play-service-account.json")
+
+# Alternative: use the JSON content directly from an environment variable
+# json_key_file_data(ENV["GOOGLE_PLAY_JSON_KEY"])
