@@ -15,6 +15,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesTitle => 'Сообщения';
 
   @override
+  String get peopleTitle => 'Люди';
+
+  @override
+  String get callsTitle => 'Звонки';
+
+  @override
   String get homeTitle => '1x1 звонки без лишнего';
 
   @override
@@ -22,13 +28,52 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сохрани профиль, проверь signaling сервер и заходи в прямой звонок с небольшим чатом.';
 
   @override
+  String get peopleSubtitle =>
+      'Избранные сверху, полный список контактов ниже.';
+
+  @override
+  String get callsSubtitle =>
+      'Недавние входящие, исходящие и пропущенные звонки в одном месте.';
+
+  @override
   String get searchConversationsHint => 'Поиск контактов и встреч...';
+
+  @override
+  String get searchPeopleHint => 'Поиск людей...';
+
+  @override
+  String get searchCallsHint => 'Поиск недавних звонков...';
 
   @override
   String get favoritesTitle => 'Избранные';
 
   @override
+  String get allPeopleTitle => 'Все люди';
+
+  @override
+  String get conversationsTitle => 'Недавние чаты';
+
+  @override
   String get recentCallsTitle => 'Недавние звонки';
+
+  @override
+  String get serverPrepTitle => 'Перед подключением к серверу';
+
+  @override
+  String get serverPrepBody =>
+      'Сначала проверь signaling сервер, затем запускай звонок через плавающую кнопку.';
+
+  @override
+  String get openSetupAction => 'Открыть настройки';
+
+  @override
+  String get onlineLabel => 'В сети';
+
+  @override
+  String get offlineLabel => 'Не в сети';
+
+  @override
+  String get unreadLabel => 'Непрочитано';
 
   @override
   String get displayNameLabel => 'Имя';

@@ -15,6 +15,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesTitle => 'Messages';
 
   @override
+  String get peopleTitle => 'People';
+
+  @override
+  String get callsTitle => 'Calls';
+
+  @override
   String get homeTitle => '1x1 calls without extra ceremony';
 
   @override
@@ -22,13 +28,52 @@ class AppLocalizationsEn extends AppLocalizations {
       'Save your profile, check the signaling server, then jump into a direct call with a compact chat.';
 
   @override
+  String get peopleSubtitle =>
+      'Favorites stay on top, while the full contact list lives below.';
+
+  @override
+  String get callsSubtitle =>
+      'Recent incoming, outgoing and missed calls in one place.';
+
+  @override
   String get searchConversationsHint => 'Search contacts or meetings...';
+
+  @override
+  String get searchPeopleHint => 'Search people...';
+
+  @override
+  String get searchCallsHint => 'Search recent calls...';
 
   @override
   String get favoritesTitle => 'Favorites';
 
   @override
+  String get allPeopleTitle => 'All people';
+
+  @override
+  String get conversationsTitle => 'Recent chats';
+
+  @override
   String get recentCallsTitle => 'Recent calls';
+
+  @override
+  String get serverPrepTitle => 'Before server connection';
+
+  @override
+  String get serverPrepBody =>
+      'Check the signaling server first, then start the call from the floating button.';
+
+  @override
+  String get openSetupAction => 'Open setup';
+
+  @override
+  String get onlineLabel => 'Online';
+
+  @override
+  String get offlineLabel => 'Offline';
+
+  @override
+  String get unreadLabel => 'Unread';
 
   @override
   String get displayNameLabel => 'Display name';

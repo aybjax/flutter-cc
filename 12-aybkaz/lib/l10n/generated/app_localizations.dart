@@ -110,6 +110,18 @@ abstract class AppLocalizations {
   /// **'Messages'**
   String get messagesTitle;
 
+  /// No description provided for @peopleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get peopleTitle;
+
+  /// No description provided for @callsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls'**
+  String get callsTitle;
+
   /// No description provided for @homeTitle.
   ///
   /// In en, this message translates to:
@@ -122,11 +134,35 @@ abstract class AppLocalizations {
   /// **'Save your profile, check the signaling server, then jump into a direct call with a compact chat.'**
   String get homeSubtitle;
 
+  /// No description provided for @peopleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites stay on top, while the full contact list lives below.'**
+  String get peopleSubtitle;
+
+  /// No description provided for @callsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent incoming, outgoing and missed calls in one place.'**
+  String get callsSubtitle;
+
   /// No description provided for @searchConversationsHint.
   ///
   /// In en, this message translates to:
   /// **'Search contacts or meetings...'**
   String get searchConversationsHint;
+
+  /// No description provided for @searchPeopleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people...'**
+  String get searchPeopleHint;
+
+  /// No description provided for @searchCallsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search recent calls...'**
+  String get searchCallsHint;
 
   /// No description provided for @favoritesTitle.
   ///
@@ -134,11 +170,59 @@ abstract class AppLocalizations {
   /// **'Favorites'**
   String get favoritesTitle;
 
+  /// No description provided for @allPeopleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All people'**
+  String get allPeopleTitle;
+
+  /// No description provided for @conversationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent chats'**
+  String get conversationsTitle;
+
   /// No description provided for @recentCallsTitle.
   ///
   /// In en, this message translates to:
   /// **'Recent calls'**
   String get recentCallsTitle;
+
+  /// No description provided for @serverPrepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before server connection'**
+  String get serverPrepTitle;
+
+  /// No description provided for @serverPrepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the signaling server first, then start the call from the floating button.'**
+  String get serverPrepBody;
+
+  /// No description provided for @openSetupAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open setup'**
+  String get openSetupAction;
+
+  /// No description provided for @onlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get onlineLabel;
+
+  /// No description provided for @offlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offlineLabel;
+
+  /// No description provided for @unreadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get unreadLabel;
 
   /// No description provided for @displayNameLabel.
   ///
