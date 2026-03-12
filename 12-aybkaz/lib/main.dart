@@ -9,11 +9,11 @@ import 'l10n/generated/app_localizations.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-  runApp(const PeerLinkApp());
+  runApp(const VideoCallAybKazApp());
 }
 
-class PeerLinkApp extends StatelessWidget {
-  const PeerLinkApp({super.key});
+class VideoCallAybKazApp extends StatelessWidget {
+  const VideoCallAybKazApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class PeerLinkApp extends StatelessWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'PeerLink',
+      title: 'VideoCall',
       theme: AppTheme.light(),
       routerConfig: appRouter.config(),
       localizationsDelegates: const [

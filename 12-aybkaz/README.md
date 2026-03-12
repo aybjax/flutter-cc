@@ -1,4 +1,4 @@
-# PeerLink
+# VideoCallAybKaz
 
 Flutter 1x1 video/audio calling app with a small chat panel, built with:
 
