@@ -45,6 +45,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchCallsHint => 'Search recent calls...';
 
   @override
+  String get grantAccessAction => 'Grant access';
+
+  @override
+  String get contactsPermissionTitle => 'Allow contacts access';
+
+  @override
+  String get contactsPermissionBody =>
+      'The People tab uses your phone contacts. Grant permission to load them into the app.';
+
+  @override
+  String get contactsEmptyTitle => 'No contacts found';
+
+  @override
+  String get contactsEmptyBody =>
+      'There are no visible contacts on this device yet.';
+
+  @override
+  String get contactsErrorTitle => 'Could not load contacts';
+
+  @override
+  String get contactNoDetailsLabel => 'No phone or email';
+
+  @override
   String get favoritesTitle => 'Favorites';
 
   @override

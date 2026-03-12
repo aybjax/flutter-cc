@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/build_context_x.dart';
+import '../../../device_contacts/domain/entities/device_contact_entity.dart';
+import '../../../device_contacts/presentation/cubit/device_contacts_cubit.dart';
+import '../../../device_contacts/presentation/cubit/device_contacts_state.dart';
 import '../cubit/settings_cubit.dart';
 import '../cubit/settings_state.dart';
 
@@ -14,8 +17,11 @@ class HomePage extends StatefulWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<SettingsCubit>()..load(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<SettingsCubit>()..load()),
+        BlocProvider(create: (_) => getIt<DeviceContactsCubit>()),
+      ],
       child: this,
     );
   }
@@ -61,57 +67,27 @@ class _HomePageState extends State<HomePage> {
     return 'You';
   }
 
-  List<_PersonContact> _people(SettingsState state) {
-    final localName = _currentDisplayName(state);
+  List<DeviceContactEntity> _favoriteContacts(List<DeviceContactEntity> contacts) {
+    final starredContacts = contacts
+        .where((contact) => contact.isFavorite)
+        .toList(growable: false);
+    if (starredContacts.isNotEmpty) {
+      return starredContacts.take(8).toList(growable: false);
+    }
 
-    return [
-      _PersonContact(
-        name: localName,
-        role: 'Product manager',
-        isOnline: true,
-        isFavorite: true,
-        palette: const [Color(0xFFFFE1D4), Color(0xFFF8B486)],
-      ),
-      const _PersonContact(
-        name: 'David Park',
-        role: 'UI engineer',
-        isOnline: true,
-        isFavorite: true,
-        palette: [Color(0xFFFFD8B2), Color(0xFFFFA35D)],
-      ),
-      const _PersonContact(
-        name: 'Elena Kim',
-        role: 'Operations',
-        isOnline: false,
-        isFavorite: true,
-        palette: [Color(0xFFFFE1DC), Color(0xFFF3B18A)],
-      ),
-      const _PersonContact(
-        name: 'Michael Stone',
-        role: 'Sales',
-        isOnline: true,
-        isFavorite: true,
-        palette: [Color(0xFFFFE7B7), Color(0xFFFFC15C)],
-      ),
-      const _PersonContact(
-        name: 'Maya Rodriguez',
-        role: 'Marketing lead',
-        isOnline: false,
-        palette: [Color(0xFFFFE1C9), Color(0xFFD9B188)],
-      ),
-      const _PersonContact(
-        name: 'Jessica Chen',
-        role: 'Designer',
-        isOnline: true,
-        palette: [Color(0xFFFFDCC8), Color(0xFFE8A97A)],
-      ),
-      const _PersonContact(
-        name: 'Robert Wilson',
-        role: 'Partnerships',
-        isOnline: false,
-        palette: [Color(0xFFF1DFC2), Color(0xFFD1AF79)],
-      ),
-    ];
+    return contacts.take(4).toList(growable: false);
+  }
+
+  List<DeviceContactEntity> _filterContacts(
+    List<DeviceContactEntity> contacts,
+  ) {
+    return contacts
+        .where((contact) => contact.matchesQuery(_searchQuery))
+        .toList(growable: false);
+  }
+
+  void _loadDeviceContactsIfNeeded({bool force = false}) {
+    context.read<DeviceContactsCubit>().loadContacts(force: force);
   }
 
   List<_ChatThread> _chatThreads(SettingsState state) {

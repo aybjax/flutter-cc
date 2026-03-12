@@ -164,6 +164,48 @@ abstract class AppLocalizations {
   /// **'Search recent calls...'**
   String get searchCallsHint;
 
+  /// No description provided for @grantAccessAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant access'**
+  String get grantAccessAction;
+
+  /// No description provided for @contactsPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow contacts access'**
+  String get contactsPermissionTitle;
+
+  /// No description provided for @contactsPermissionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The People tab uses your phone contacts. Grant permission to load them into the app.'**
+  String get contactsPermissionBody;
+
+  /// No description provided for @contactsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts found'**
+  String get contactsEmptyTitle;
+
+  /// No description provided for @contactsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no visible contacts on this device yet.'**
+  String get contactsEmptyBody;
+
+  /// No description provided for @contactsErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load contacts'**
+  String get contactsErrorTitle;
+
+  /// No description provided for @contactNoDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone or email'**
+  String get contactNoDetailsLabel;
+
   /// No description provided for @favoritesTitle.
   ///
   /// In en, this message translates to:

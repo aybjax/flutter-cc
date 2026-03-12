@@ -32,6 +32,8 @@
 	<string>Microphone access is required for audio and video calls.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Local network access lets the app connect to your signaling server during development.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Contacts access is used to show your phone contact list in the People tab.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

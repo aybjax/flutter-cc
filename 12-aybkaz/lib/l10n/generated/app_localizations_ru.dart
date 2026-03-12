@@ -45,6 +45,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get searchCallsHint => 'Поиск недавних звонков...';
 
   @override
+  String get grantAccessAction => 'Дать доступ';
+
+  @override
+  String get contactsPermissionTitle => 'Разреши доступ к контактам';
+
+  @override
+  String get contactsPermissionBody =>
+      'Вкладка Люди использует контакты телефона. Разреши доступ, чтобы загрузить адресную книгу в приложение.';
+
+  @override
+  String get contactsEmptyTitle => 'Контакты не найдены';
+
+  @override
+  String get contactsEmptyBody => 'На устройстве пока нет видимых контактов.';
+
+  @override
+  String get contactsErrorTitle => 'Не удалось загрузить контакты';
+
+  @override
+  String get contactNoDetailsLabel => 'Нет телефона или почты';
+
+  @override
   String get favoritesTitle => 'Избранные';
 
   @override

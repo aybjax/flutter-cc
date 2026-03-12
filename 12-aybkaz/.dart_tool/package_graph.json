@@ -13,6 +13,7 @@
         "dio",
         "flutter",
         "flutter_bloc",
+        "flutter_contacts",
         "flutter_localizations",
         "flutter_webrtc",
         "freezed_annotation",
@@ -211,6 +212,13 @@
         "path_provider",
         "web",
         "webrtc_interface"
+      ]
+    },
+    {
+      "name": "flutter_contacts",
+      "version": "1.1.9+2",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
