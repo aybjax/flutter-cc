@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -176,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                       isWide ? 36 : 24,
                       24,
                       isWide ? 36 : 24,
-                      24,
+                      140,
                     ),
                     child: Center(
                       child: ConstrainedBox(
@@ -279,20 +277,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          bottomNavigationBar: _BottomBar(
-            selectedIndex: _selectedTabIndex,
-            isLoading: state.isSaving,
-            onTabSelected: (index) {
-              if (index == 3) {
-                _showSetupSheet(context, cubit);
-                return;
-              }
-
-              setState(() {
-                _selectedTabIndex = index;
-              });
-            },
-            onStartCall: isBusy
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: isBusy
                 ? null
                 : () async {
                     final saved = await cubit.saveSettings(
@@ -307,6 +294,64 @@ class _HomePageState extends State<HomePage> {
 
                     await context.router.push(const CallRoomRoute());
                   },
+            backgroundColor: const Color(0xFF2B6EF2),
+            foregroundColor: Colors.white,
+            extendedPadding: const EdgeInsets.symmetric(
+              horizontal: 22,
+              vertical: 12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+            ),
+            elevation: 6,
+            icon: state.isSaving
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.video_call_rounded, size: 22),
+            label: Text(
+              context.l10n.startVideoCallCta,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _selectedTabIndex,
+            onDestinationSelected: (index) {
+              if (index == 3) {
+                _showSetupSheet(context, cubit);
+                return;
+              }
+
+              setState(() {
+                _selectedTabIndex = index;
+              });
+            },
+            destinations: [
+              NavigationDestination(
+                icon: const Icon(Icons.chat_bubble_outline_rounded),
+                label: context.l10n.chatsTab,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.groups_rounded),
+                label: context.l10n.peopleTab,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.call_outlined),
+                label: context.l10n.callsTab,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.settings_outlined),
+                label: context.l10n.settingsTab,
+              ),
+            ],
           ),
         );
       },
@@ -451,6 +496,13 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: isBusy
                                       ? null
                                       : () async {
+                                          final navigator = Navigator.of(
+                                            context,
+                                          );
+                                          final messenger =
+                                              ScaffoldMessenger.of(
+                                                this.context,
+                                              );
                                           final saved = await cubit
                                               .saveSettings(
                                                 displayName:
@@ -461,12 +513,12 @@ class _HomePageState extends State<HomePage> {
                                                 startWithVideo: sheetVideo,
                                               );
 
-                                          if (!saved || !context.mounted) {
+                                          if (!saved || !mounted) {
                                             return;
                                           }
 
-                                          Navigator.of(context).pop();
-                                          ScaffoldMessenger.of(this.context)
+                                          navigator.pop();
+                                          messenger
                                             ..hideCurrentSnackBar()
                                             ..showSnackBar(
                                               SnackBar(
@@ -528,7 +580,7 @@ class _HeaderSection extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0B1633),
                   height: 1,
@@ -570,20 +622,20 @@ class _SearchField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFE9EDF3),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: TextField(
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText: hintText,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
           prefixIcon: const Icon(
             Icons.search_rounded,
-            size: 34,
+            size: 26,
             color: Color(0xFF98A5BD),
           ),
-          hintStyle: const TextStyle(color: Color(0xFF73829E), fontSize: 18),
+          hintStyle: const TextStyle(color: Color(0xFF73829E), fontSize: 14),
         ),
       ),
     );
@@ -616,10 +668,10 @@ class _ServerStatusCard extends StatelessWidget {
     };
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0C0B1633),
@@ -682,15 +734,15 @@ class _FavoriteContactAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 82,
+      width: 74,
       child: Column(
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
               Container(
-                width: 74,
-                height: 74,
+                width: 62,
+                height: 62,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(colors: contact.palette),
@@ -712,8 +764,8 @@ class _FavoriteContactAvatar extends StatelessWidget {
                 right: -2,
                 bottom: -2,
                 child: Container(
-                  width: 18,
-                  height: 18,
+                  width: 16,
+                  height: 16,
                   decoration: BoxDecoration(
                     color: contact.isOnline
                         ? const Color(0xFF22C55E)
@@ -764,10 +816,10 @@ class _RecentCallTile extends StatelessWidget {
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
@@ -775,8 +827,8 @@ class _RecentCallTile extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               Container(
-                width: 64,
-                height: 64,
+                width: 54,
+                height: 54,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(colors: call.palette),
@@ -794,8 +846,8 @@ class _RecentCallTile extends StatelessWidget {
                 right: -1,
                 bottom: -1,
                 child: Container(
-                  width: 16,
-                  height: 16,
+                  width: 14,
+                  height: 14,
                   decoration: BoxDecoration(
                     color: call.isOnline
                         ? const Color(0xFF22C55E)
@@ -845,7 +897,7 @@ class _RecentCallTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Icon(icon, color: const Color(0xFF93A1B8), size: 30),
+          Icon(icon, color: const Color(0xFF93A1B8), size: 24),
         ],
       ),
     );
@@ -855,149 +907,6 @@ class _RecentCallTile extends StatelessWidget {
     final parts = name.trim().split(' ').where((part) => part.isNotEmpty);
     final letters = parts.take(2).map((part) => part[0]).join();
     return letters.toUpperCase();
-  }
-}
-
-class _BottomBar extends StatelessWidget {
-  const _BottomBar({
-    required this.selectedIndex,
-    required this.isLoading,
-    required this.onTabSelected,
-    required this.onStartCall,
-  });
-
-  final int selectedIndex;
-  final bool isLoading;
-  final ValueChanged<int> onTabSelected;
-  final VoidCallback? onStartCall;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF6F7FA),
-        border: Border(top: BorderSide(color: Color(0xFFD8DEEA))),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-                child: FilledButton.icon(
-                  onPressed: onStartCall,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF2B6EF2),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    minimumSize: const Size.fromHeight(72),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                  ),
-                  icon: isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.video_call_rounded, size: 28),
-                  label: Text(
-                    l10n.startVideoCallCta,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  _NavItem(
-                    label: l10n.chatsTab,
-                    icon: Icons.chat_bubble_outline_rounded,
-                    isSelected: selectedIndex == 0,
-                    onTap: () => onTabSelected(0),
-                  ),
-                  _NavItem(
-                    label: l10n.peopleTab,
-                    icon: Icons.groups_rounded,
-                    isSelected: selectedIndex == 1,
-                    onTap: () => onTabSelected(1),
-                  ),
-                  _NavItem(
-                    label: l10n.callsTab,
-                    icon: Icons.call_outlined,
-                    isSelected: selectedIndex == 2,
-                    onTap: () => onTabSelected(2),
-                  ),
-                  _NavItem(
-                    label: l10n.settingsTab,
-                    icon: Icons.settings_outlined,
-                    isSelected: selectedIndex == 3,
-                    onTap: () => onTabSelected(3),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isSelected
-        ? const Color(0xFF2B6EF2)
-        : const Color(0xFF97A4BC);
-
-    return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 30),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: color,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -1023,9 +932,9 @@ class _SoftCircleButton extends StatelessWidget {
         customBorder: const CircleBorder(),
         onTap: onPressed,
         child: SizedBox(
-          width: 60,
-          height: 60,
-          child: Icon(icon, color: foregroundColor, size: 30),
+          width: 48,
+          height: 48,
+          child: Icon(icon, color: foregroundColor, size: 22),
         ),
       ),
     );
@@ -1043,8 +952,8 @@ class _ProfileAvatarButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 60,
-        height: 60,
+        width: 48,
+        height: 48,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(

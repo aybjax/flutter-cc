@@ -227,14 +227,16 @@ class _CallRoomPageState extends State<CallRoomPage> {
       return;
     }
 
+    final copiedMessage = context.l10n.copyPeerIdSuccess;
+    final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: value));
-    if (!mounted) {
+    if (!context.mounted) {
       return;
     }
 
-    ScaffoldMessenger.of(context)
+    messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(context.l10n.copyPeerIdSuccess)));
+      ..showSnackBar(SnackBar(content: Text(copiedMessage)));
   }
 
   Future<void> _showChatSheet(BuildContext context, CallRoomState state) async {

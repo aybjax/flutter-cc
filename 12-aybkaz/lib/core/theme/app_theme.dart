@@ -14,41 +14,63 @@ class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: const Color(0xFFF6F7FA),
       textTheme: const TextTheme(
-        displaySmall: TextStyle(
-          fontSize: 34,
+        displayMedium: TextStyle(
+          fontSize: 16,
           fontWeight: FontWeight.w800,
           color: Color(0xFF0B1633),
-          letterSpacing: -1.2,
+          letterSpacing: -0.2,
+        ),
+        displaySmall: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF0B1633),
+          letterSpacing: -0.2,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF0B1633),
+          letterSpacing: -0.2,
         ),
         headlineSmall: TextStyle(
-          fontSize: 30,
+          fontSize: 16,
           fontWeight: FontWeight.w800,
           color: Color(0xFF0B1633),
-          letterSpacing: -0.8,
+          letterSpacing: -0.2,
         ),
         titleLarge: TextStyle(
-          fontSize: 22,
+          fontSize: 16,
           fontWeight: FontWeight.w700,
           color: Color(0xFF0B1633),
         ),
+        titleSmall: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF72819B),
+        ),
         titleMedium: TextStyle(
-          fontSize: 18,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
           color: Color(0xFF15203A),
         ),
         bodyLarge: TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Color(0xFF5E6B84),
         ),
         bodyMedium: TextStyle(
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Color(0xFF72819B),
         ),
         labelLarge: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
+          color: Color(0xFF72819B),
+        ),
+        labelSmall: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
           color: Color(0xFF72819B),
         ),
       ),
@@ -57,6 +79,11 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         foregroundColor: Color(0xFF0B1633),
         elevation: 0,
+        titleTextStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF0B1633),
+        ),
       ),
       cardTheme: CardThemeData(
         color: Colors.white,
@@ -104,6 +131,28 @@ class AppTheme {
       ),
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        height: 66,
+        backgroundColor: const Color(0xFFF8F9FC),
+        indicatorColor: const Color(0x1A2B6EF2),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final color = states.contains(WidgetState.selected)
+              ? const Color(0xFF2B6EF2)
+              : const Color(0xFF97A4BC);
+          return IconThemeData(color: color, size: 24);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          return TextStyle(
+            fontSize: 11,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w700
+                : FontWeight.w500,
+            color: states.contains(WidgetState.selected)
+                ? const Color(0xFF2B6EF2)
+                : const Color(0xFF97A4BC),
+          );
+        }),
       ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
