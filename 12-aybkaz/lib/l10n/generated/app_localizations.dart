@@ -101,8 +101,14 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'PeerLink'**
+  /// **'VideoCall'**
   String get appTitle;
+
+  /// No description provided for @messagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messagesTitle;
 
   /// No description provided for @homeTitle.
   ///
@@ -115,6 +121,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save your profile, check the signaling server, then jump into a direct call with a compact chat.'**
   String get homeSubtitle;
+
+  /// No description provided for @searchConversationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search contacts or meetings...'**
+  String get searchConversationsHint;
+
+  /// No description provided for @favoritesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favoritesTitle;
+
+  /// No description provided for @recentCallsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent calls'**
+  String get recentCallsTitle;
 
   /// No description provided for @displayNameLabel.
   ///
@@ -152,6 +176,18 @@ abstract class AppLocalizations {
   /// **'Start with camera enabled'**
   String get startWithVideoLabel;
 
+  /// No description provided for @settingsSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call setup'**
+  String get settingsSheetTitle;
+
+  /// No description provided for @settingsSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your display name, signaling URL and launch preferences before joining.'**
+  String get settingsSheetSubtitle;
+
   /// No description provided for @checkServerAction.
   ///
   /// In en, this message translates to:
@@ -164,6 +200,18 @@ abstract class AppLocalizations {
   /// **'Join call'**
   String get joinCallAction;
 
+  /// No description provided for @saveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveAction;
+
+  /// No description provided for @startVideoCallCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Start video call'**
+  String get startVideoCallCta;
+
   /// No description provided for @serverOnline.
   ///
   /// In en, this message translates to:
@@ -175,6 +223,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Server did not respond'**
   String get serverOffline;
+
+  /// No description provided for @serverStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Server not checked'**
+  String get serverStatusUnknown;
 
   /// No description provided for @saveSuccess.
   ///
@@ -296,6 +350,30 @@ abstract class AppLocalizations {
   /// **'Send'**
   String get sendAction;
 
+  /// No description provided for @shareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareAction;
+
+  /// No description provided for @filtersAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersAction;
+
+  /// No description provided for @chatAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatAction;
+
+  /// No description provided for @detailsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get detailsAction;
+
   /// No description provided for @muteAction.
   ///
   /// In en, this message translates to:
@@ -325,6 +403,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leave'**
   String get leaveAction;
+
+  /// No description provided for @copyPeerIdSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Peer ID copied'**
+  String get copyPeerIdSuccess;
+
+  /// No description provided for @callFiltersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Video filters'**
+  String get callFiltersTitle;
+
+  /// No description provided for @applyFilterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filter'**
+  String get applyFilterAction;
+
+  /// No description provided for @filterNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get filterNone;
+
+  /// No description provided for @filterBlur.
+  ///
+  /// In en, this message translates to:
+  /// **'Blur'**
+  String get filterBlur;
+
+  /// No description provided for @filterMono.
+  ///
+  /// In en, this message translates to:
+  /// **'Mono'**
+  String get filterMono;
+
+  /// No description provided for @filterWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm'**
+  String get filterWarm;
 
   /// No description provided for @systemSender.
   ///
@@ -367,6 +487,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings could not be loaded.'**
   String get callNoSettings;
+
+  /// No description provided for @incomingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get incomingStatus;
+
+  /// No description provided for @outgoingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Outgoing'**
+  String get outgoingStatus;
+
+  /// No description provided for @missedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get missedStatus;
+
+  /// No description provided for @chatsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chatsTab;
+
+  /// No description provided for @peopleTab.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get peopleTab;
+
+  /// No description provided for @callsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls'**
+  String get callsTab;
+
+  /// No description provided for @settingsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTab;
 
   /// No description provided for @statusIdle.
   ///

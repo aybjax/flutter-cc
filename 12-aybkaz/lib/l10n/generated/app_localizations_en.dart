@@ -9,7 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'PeerLink';
+  String get appTitle => 'VideoCall';
+
+  @override
+  String get messagesTitle => 'Messages';
 
   @override
   String get homeTitle => '1x1 calls without extra ceremony';
@@ -17,6 +20,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homeSubtitle =>
       'Save your profile, check the signaling server, then jump into a direct call with a compact chat.';
+
+  @override
+  String get searchConversationsHint => 'Search contacts or meetings...';
+
+  @override
+  String get favoritesTitle => 'Favorites';
+
+  @override
+  String get recentCallsTitle => 'Recent calls';
 
   @override
   String get displayNameLabel => 'Display name';
@@ -38,16 +50,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startWithVideoLabel => 'Start with camera enabled';
 
   @override
+  String get settingsSheetTitle => 'Call setup';
+
+  @override
+  String get settingsSheetSubtitle =>
+      'Update your display name, signaling URL and launch preferences before joining.';
+
+  @override
   String get checkServerAction => 'Check server';
 
   @override
   String get joinCallAction => 'Join call';
 
   @override
+  String get saveAction => 'Save';
+
+  @override
+  String get startVideoCallCta => 'Start video call';
+
+  @override
   String get serverOnline => 'Server is reachable';
 
   @override
   String get serverOffline => 'Server did not respond';
+
+  @override
+  String get serverStatusUnknown => 'Server not checked';
 
   @override
   String get saveSuccess => 'Settings saved';
@@ -111,6 +139,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendAction => 'Send';
 
   @override
+  String get shareAction => 'Share';
+
+  @override
+  String get filtersAction => 'Filters';
+
+  @override
+  String get chatAction => 'Chat';
+
+  @override
+  String get detailsAction => 'Details';
+
+  @override
   String get muteAction => 'Mute';
 
   @override
@@ -124,6 +164,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leaveAction => 'Leave';
+
+  @override
+  String get copyPeerIdSuccess => 'Peer ID copied';
+
+  @override
+  String get callFiltersTitle => 'Video filters';
+
+  @override
+  String get applyFilterAction => 'Apply filter';
+
+  @override
+  String get filterNone => 'None';
+
+  @override
+  String get filterBlur => 'Blur';
+
+  @override
+  String get filterMono => 'Mono';
+
+  @override
+  String get filterWarm => 'Warm';
 
   @override
   String get systemSender => 'System';
@@ -145,6 +206,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callNoSettings => 'Settings could not be loaded.';
+
+  @override
+  String get incomingStatus => 'Incoming';
+
+  @override
+  String get outgoingStatus => 'Outgoing';
+
+  @override
+  String get missedStatus => 'Missed';
+
+  @override
+  String get chatsTab => 'Chats';
+
+  @override
+  String get peopleTab => 'People';
+
+  @override
+  String get callsTab => 'Calls';
+
+  @override
+  String get settingsTab => 'Settings';
 
   @override
   String get statusIdle => 'Idle';
