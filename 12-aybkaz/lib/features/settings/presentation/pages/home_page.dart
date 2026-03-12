@@ -47,29 +47,108 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  List<_FavoriteContact> _favorites(BuildContext context, SettingsState state) {
+  String _currentDisplayName(SettingsState state) {
+    final typed = _displayNameController.text.trim();
+    if (typed.isNotEmpty) {
+      return typed;
+    }
+
+    final saved = state.settings.displayName.trim();
+    if (saved.isNotEmpty) {
+      return saved;
+    }
+
+    return 'You';
+  }
+
+  List<_PersonContact> _people(SettingsState state) {
     final localName = _currentDisplayName(state);
 
     return [
-      _FavoriteContact(
+      _PersonContact(
         name: localName,
+        role: 'Product manager',
+        isOnline: true,
+        isFavorite: true,
         palette: const [Color(0xFFFFE1D4), Color(0xFFF8B486)],
-        isOnline: true,
       ),
-      const _FavoriteContact(
-        name: 'David',
+      const _PersonContact(
+        name: 'David Park',
+        role: 'UI engineer',
+        isOnline: true,
+        isFavorite: true,
         palette: [Color(0xFFFFD8B2), Color(0xFFFFA35D)],
-        isOnline: true,
       ),
-      const _FavoriteContact(
-        name: 'Elena',
-        palette: [Color(0xFFFFE1DC), Color(0xFFF3B18A)],
+      const _PersonContact(
+        name: 'Elena Kim',
+        role: 'Operations',
         isOnline: false,
+        isFavorite: true,
+        palette: [Color(0xFFFFE1DC), Color(0xFFF3B18A)],
       ),
-      const _FavoriteContact(
-        name: 'Michael',
-        palette: [Color(0xFFFFE7B7), Color(0xFFFFC15C)],
+      const _PersonContact(
+        name: 'Michael Stone',
+        role: 'Sales',
         isOnline: true,
+        isFavorite: true,
+        palette: [Color(0xFFFFE7B7), Color(0xFFFFC15C)],
+      ),
+      const _PersonContact(
+        name: 'Maya Rodriguez',
+        role: 'Marketing lead',
+        isOnline: false,
+        palette: [Color(0xFFFFE1C9), Color(0xFFD9B188)],
+      ),
+      const _PersonContact(
+        name: 'Jessica Chen',
+        role: 'Designer',
+        isOnline: true,
+        palette: [Color(0xFFFFDCC8), Color(0xFFE8A97A)],
+      ),
+      const _PersonContact(
+        name: 'Robert Wilson',
+        role: 'Partnerships',
+        isOnline: false,
+        palette: [Color(0xFFF1DFC2), Color(0xFFD1AF79)],
+      ),
+    ];
+  }
+
+  List<_ChatThread> _chatThreads(SettingsState state) {
+    final localName = _currentDisplayName(state);
+
+    return [
+      _ChatThread(
+        name: 'Sarah Jenkins',
+        lastMessage: 'Ready when the server is up. Send me the room.',
+        timeLabel: '2m',
+        unreadCount: 2,
+        isOnline: true,
+        palette: const [Color(0xFFFFE1D4), Color(0xFFF8B486)],
+      ),
+      const _ChatThread(
+        name: 'David Park',
+        lastMessage: 'Pushed the latest UI polish for the call screen.',
+        timeLabel: '15m',
+        unreadCount: 0,
+        isOnline: true,
+        palette: [Color(0xFFFFD8B2), Color(0xFFFFA35D)],
+      ),
+      const _ChatThread(
+        name: 'Maya Rodriguez',
+        lastMessage: 'Let us sync once the signaling server is reachable.',
+        timeLabel: '1h',
+        unreadCount: 0,
+        isOnline: false,
+        palette: [Color(0xFFFFE1C9), Color(0xFFD9B188)],
+      ),
+      _ChatThread(
+        name: localName,
+        lastMessage: 'Your saved profile will be used for the next call.',
+        timeLabel: 'Now',
+        unreadCount: 1,
+        isOnline: true,
+        palette: const [Color(0xFFFFE7B7), Color(0xFFFFC15C)],
       ),
     ];
   }
@@ -109,18 +188,28 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
-  String _currentDisplayName(SettingsState state) {
-    final typed = _displayNameController.text.trim();
-    if (typed.isNotEmpty) {
-      return typed;
-    }
+  String _tabTitle(BuildContext context) {
+    return switch (_selectedTabIndex) {
+      1 => context.l10n.peopleTitle,
+      2 => context.l10n.callsTitle,
+      _ => context.l10n.messagesTitle,
+    };
+  }
 
-    final saved = state.settings.displayName.trim();
-    if (saved.isNotEmpty) {
-      return saved;
-    }
+  String _tabSubtitle(BuildContext context) {
+    return switch (_selectedTabIndex) {
+      1 => context.l10n.peopleSubtitle,
+      2 => context.l10n.callsSubtitle,
+      _ => context.l10n.homeSubtitle,
+    };
+  }
 
-    return 'You';
+  String _searchHint(BuildContext context) {
+    return switch (_selectedTabIndex) {
+      1 => context.l10n.searchPeopleHint,
+      2 => context.l10n.searchCallsHint,
+      _ => context.l10n.searchConversationsHint,
+    };
   }
 
   @override
@@ -146,11 +235,42 @@ class _HomePageState extends State<HomePage> {
         final cubit = context.read<SettingsCubit>();
         final isBusy =
             state.isLoading || state.isSaving || state.isCheckingServer;
-        final favorites = _favorites(context, state);
-        final recentCalls = _recentCalls(context)
+        final people = _people(state);
+        final favorites = people.where((person) => person.isFavorite).toList();
+        final filteredPeople = people
+            .where(
+              (person) => person.name.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  ),
+            )
+            .toList();
+        final filteredFavorites = favorites
+            .where(
+              (person) => person.name.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  ),
+            )
+            .toList();
+        final filteredThreads = _chatThreads(state)
+            .where(
+              (thread) =>
+                  thread.name.toLowerCase().contains(
+                        _searchQuery.toLowerCase(),
+                      ) ||
+                  thread.lastMessage.toLowerCase().contains(
+                        _searchQuery.toLowerCase(),
+                      ),
+            )
+            .toList();
+        final filteredCalls = _recentCalls(context)
             .where(
               (call) =>
-                  call.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+                  call.name.toLowerCase().contains(
+                        _searchQuery.toLowerCase(),
+                      ) ||
+                  call.statusLabel.toLowerCase().contains(
+                        _searchQuery.toLowerCase(),
+                      ),
             )
             .toList();
 
@@ -183,91 +303,44 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _HeaderSection(
-                              title: context.l10n.messagesTitle,
-                              subtitle: context.l10n.homeSubtitle,
+                              title: _tabTitle(context),
+                              subtitle: _tabSubtitle(context),
                               displayName: _currentDisplayName(state),
-                              onEditPressed: () {
-                                _showSetupSheet(context, cubit);
-                              },
-                              onAvatarPressed: () {
-                                _showSetupSheet(context, cubit);
-                              },
+                              onEditPressed: () => _showSetupSheet(context, cubit),
+                              onAvatarPressed: () =>
+                                  _showSetupSheet(context, cubit),
                             ),
-                            const SizedBox(height: 28),
+                            const SizedBox(height: 24),
                             _SearchField(
-                              hintText: context.l10n.searchConversationsHint,
+                              hintText: _searchHint(context),
                               onChanged: (value) {
                                 setState(() {
                                   _searchQuery = value;
                                 });
                               },
                             ),
-                            const SizedBox(height: 18),
-                            _ServerStatusCard(
-                              serverUrl: _signalingUrlController.text.isEmpty
-                                  ? state.settings.signalingUrl
-                                  : _signalingUrlController.text,
-                              isReachable: state.serverReachable,
-                              onCheckPressed: isBusy
-                                  ? null
-                                  : () => cubit.checkServer(
-                                      _signalingUrlController.text,
-                                    ),
-                            ),
-                            const SizedBox(height: 34),
-                            Text(
-                              context.l10n.favoritesTitle.toUpperCase(),
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: const Color(0xFF6E7C97),
-                                    letterSpacing: 1.2,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                            const SizedBox(height: 18),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  for (final contact in favorites) ...[
-                                    _FavoriteContactAvatar(contact: contact),
-                                    const SizedBox(width: 20),
-                                  ],
-                                ],
+                            const SizedBox(height: 20),
+                            if (_selectedTabIndex == 0)
+                              _ChatsTabContent(
+                                serverUrl: _signalingUrlController.text.isEmpty
+                                    ? state.settings.signalingUrl
+                                    : _signalingUrlController.text,
+                                serverReachable: state.serverReachable,
+                                threads: filteredThreads,
+                                onCheckPressed: isBusy
+                                    ? null
+                                    : () => cubit.checkServer(
+                                          _signalingUrlController.text,
+                                        ),
+                                onOpenSetup: () => _showSetupSheet(context, cubit),
                               ),
-                            ),
-                            const SizedBox(height: 34),
-                            Text(
-                              context.l10n.recentCallsTitle.toUpperCase(),
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: const Color(0xFF6E7C97),
-                                    letterSpacing: 1.2,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                            const SizedBox(height: 18),
-                            Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF1F3F8),
-                                borderRadius: BorderRadius.circular(30),
+                            if (_selectedTabIndex == 1)
+                              _PeopleTabContent(
+                                favorites: filteredFavorites,
+                                people: filteredPeople,
                               ),
-                              child: Column(
-                                children: [
-                                  for (
-                                    var i = 0;
-                                    i < recentCalls.length;
-                                    i++
-                                  ) ...[
-                                    _RecentCallTile(call: recentCalls[i]),
-                                    if (i != recentCalls.length - 1)
-                                      const SizedBox(height: 12),
-                                  ],
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 24),
+                            if (_selectedTabIndex == 2)
+                              _CallsTabContent(calls: filteredCalls),
                           ],
                         ),
                       ),
@@ -317,9 +390,9 @@ class _HomePageState extends State<HomePage> {
             label: Text(
               context.l10n.startVideoCallCta,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
           ),
           bottomNavigationBar: NavigationBar(
@@ -376,7 +449,6 @@ class _HomePageState extends State<HomePage> {
             builder: (context, state) {
               final isBusy =
                   state.isSaving || state.isCheckingServer || state.isLoading;
-              final serverReachable = state.serverReachable;
 
               return StatefulBuilder(
                 builder: (context, setModalState) {
@@ -463,7 +535,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 10),
                           _SheetStatusRow(
-                            serverReachable: serverReachable,
+                            serverReachable: state.serverReachable,
                             unknownLabel: l10n.serverStatusUnknown,
                             onlineLabel: l10n.serverOnline,
                             offlineLabel: l10n.serverOffline,
@@ -476,8 +548,8 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: isBusy
                                       ? null
                                       : () => cubit.checkServer(
-                                          _signalingUrlController.text,
-                                        ),
+                                            _signalingUrlController.text,
+                                          ),
                                   icon: state.isCheckingServer
                                       ? const SizedBox(
                                           width: 18,
@@ -496,22 +568,17 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: isBusy
                                       ? null
                                       : () async {
-                                          final navigator = Navigator.of(
-                                            context,
-                                          );
+                                          final navigator = Navigator.of(context);
                                           final messenger =
-                                              ScaffoldMessenger.of(
-                                                this.context,
-                                              );
-                                          final saved = await cubit
-                                              .saveSettings(
-                                                displayName:
-                                                    _displayNameController.text,
-                                                signalingUrl:
-                                                    _signalingUrlController
-                                                        .text,
-                                                startWithVideo: sheetVideo,
-                                              );
+                                              ScaffoldMessenger.of(this.context);
+                                          final saved =
+                                              await cubit.saveSettings(
+                                            displayName:
+                                                _displayNameController.text,
+                                            signalingUrl:
+                                                _signalingUrlController.text,
+                                            startWithVideo: sheetVideo,
+                                          );
 
                                           if (!saved || !mounted) {
                                             return;
@@ -522,7 +589,8 @@ class _HomePageState extends State<HomePage> {
                                             ..hideCurrentSnackBar()
                                             ..showSnackBar(
                                               SnackBar(
-                                                content: Text(l10n.saveSuccess),
+                                                content:
+                                                    Text(l10n.saveSuccess),
                                               ),
                                             );
                                         },
@@ -581,18 +649,18 @@ class _HeaderSection extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0B1633),
-                  height: 1,
-                ),
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0B1633),
+                      height: 1,
+                    ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: const Color(0xFF6E7C97),
-                  height: 1.35,
-                ),
+                      color: const Color(0xFF6E7C97),
+                      height: 1.35,
+                    ),
               ),
             ],
           ),
@@ -605,14 +673,138 @@ class _HeaderSection extends StatelessWidget {
           onPressed: onEditPressed,
         ),
         const SizedBox(width: 12),
-        _ProfileAvatarButton(label: displayName, onPressed: onAvatarPressed),
+        _ProfileAvatarButton(
+          label: displayName,
+          onPressed: onAvatarPressed,
+        ),
+      ],
+    );
+  }
+}
+
+class _ChatsTabContent extends StatelessWidget {
+  const _ChatsTabContent({
+    required this.serverUrl,
+    required this.serverReachable,
+    required this.threads,
+    required this.onCheckPressed,
+    required this.onOpenSetup,
+  });
+
+  final String serverUrl;
+  final bool? serverReachable;
+  final List<_ChatThread> threads;
+  final VoidCallback? onCheckPressed;
+  final VoidCallback onOpenSetup;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ServerPrepCard(
+          serverUrl: serverUrl,
+          serverReachable: serverReachable,
+          onCheckPressed: onCheckPressed,
+          onOpenSetup: onOpenSetup,
+        ),
+        const SizedBox(height: 26),
+        _SectionLabel(title: context.l10n.conversationsTitle),
+        const SizedBox(height: 14),
+        _SoftPanel(
+          child: Column(
+            children: [
+              for (var i = 0; i < threads.length; i++) ...[
+                _ChatThreadTile(thread: threads[i]),
+                if (i != threads.length - 1) const SizedBox(height: 12),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PeopleTabContent extends StatelessWidget {
+  const _PeopleTabContent({
+    required this.favorites,
+    required this.people,
+  });
+
+  final List<_PersonContact> favorites;
+  final List<_PersonContact> people;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(title: context.l10n.favoritesTitle),
+        const SizedBox(height: 14),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              for (final person in favorites) ...[
+                _FavoriteContactAvatar(person: person),
+                const SizedBox(width: 18),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 26),
+        _SectionLabel(title: context.l10n.allPeopleTitle),
+        const SizedBox(height: 14),
+        _SoftPanel(
+          child: Column(
+            children: [
+              for (var i = 0; i < people.length; i++) ...[
+                _PersonTile(person: people[i]),
+                if (i != people.length - 1) const SizedBox(height: 12),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CallsTabContent extends StatelessWidget {
+  const _CallsTabContent({
+    required this.calls,
+  });
+
+  final List<_RecentCall> calls;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(title: context.l10n.recentCallsTitle),
+        const SizedBox(height: 14),
+        _SoftPanel(
+          child: Column(
+            children: [
+              for (var i = 0; i < calls.length; i++) ...[
+                _RecentCallTile(call: calls[i]),
+                if (i != calls.length - 1) const SizedBox(height: 12),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }
 }
 
 class _SearchField extends StatelessWidget {
-  const _SearchField({required this.hintText, required this.onChanged});
+  const _SearchField({
+    required this.hintText,
+    required this.onChanged,
+  });
 
   final String hintText;
   final ValueChanged<String> onChanged;
@@ -635,43 +827,48 @@ class _SearchField extends StatelessWidget {
             size: 26,
             color: Color(0xFF98A5BD),
           ),
-          hintStyle: const TextStyle(color: Color(0xFF73829E), fontSize: 14),
+          hintStyle: const TextStyle(
+            color: Color(0xFF73829E),
+            fontSize: 14,
+          ),
         ),
       ),
     );
   }
 }
 
-class _ServerStatusCard extends StatelessWidget {
-  const _ServerStatusCard({
+class _ServerPrepCard extends StatelessWidget {
+  const _ServerPrepCard({
     required this.serverUrl,
-    required this.isReachable,
+    required this.serverReachable,
     required this.onCheckPressed,
+    required this.onOpenSetup,
   });
 
   final String serverUrl;
-  final bool? isReachable;
+  final bool? serverReachable;
   final VoidCallback? onCheckPressed;
+  final VoidCallback onOpenSetup;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final statusText = switch (isReachable) {
+    final statusText = switch (serverReachable) {
       true => l10n.serverOnline,
       false => l10n.serverOffline,
       null => l10n.serverStatusUnknown,
     };
-    final statusColor = switch (isReachable) {
+    final statusColor = switch (serverReachable) {
       true => const Color(0xFF22C55E),
       false => const Color(0xFFFF5A5A),
       null => const Color(0xFF9EABC0),
     };
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0C0B1633),
@@ -680,45 +877,73 @@ class _ServerStatusCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  statusText,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF0B1633),
-                  ),
+          Text(
+            l10n.serverPrepTitle,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  serverUrl,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF7A879E),
-                  ),
-                ),
-              ],
-            ),
           ),
-          const SizedBox(width: 12),
-          TextButton.icon(
-            onPressed: onCheckPressed,
-            icon: const Icon(Icons.wifi_find_rounded),
-            label: Text(context.l10n.checkServerAction),
+          const SizedBox(height: 8),
+          Text(
+            l10n.serverPrepBody,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      statusText,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: const Color(0xFF0B1633),
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      serverUrl,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF7A879E),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              OutlinedButton.icon(
+                onPressed: onCheckPressed,
+                icon: const Icon(Icons.wifi_find_rounded),
+                label: Text(l10n.checkServerAction),
+              ),
+              TextButton.icon(
+                onPressed: onOpenSetup,
+                icon: const Icon(Icons.tune_rounded),
+                label: Text(l10n.openSetupAction),
+              ),
+            ],
           ),
         ],
       ),
@@ -726,10 +951,52 @@ class _ServerStatusCard extends StatelessWidget {
   }
 }
 
-class _FavoriteContactAvatar extends StatelessWidget {
-  const _FavoriteContactAvatar({required this.contact});
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({
+    required this.title,
+  });
 
-  final _FavoriteContact contact;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title.toUpperCase(),
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: const Color(0xFF6E7C97),
+            letterSpacing: 1.2,
+            fontWeight: FontWeight.w700,
+          ),
+    );
+  }
+}
+
+class _SoftPanel extends StatelessWidget {
+  const _SoftPanel({
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F3F8),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _FavoriteContactAvatar extends StatelessWidget {
+  const _FavoriteContactAvatar({
+    required this.person,
+  });
+
+  final _PersonContact person;
 
   @override
   Widget build(BuildContext context) {
@@ -745,7 +1012,7 @@ class _FavoriteContactAvatar extends StatelessWidget {
                 height: 62,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(colors: contact.palette),
+                  gradient: LinearGradient(colors: person.palette),
                   border: Border.all(
                     color: const Color(0xFF2B6EF2).withValues(alpha: 0.9),
                     width: 3,
@@ -753,11 +1020,11 @@ class _FavoriteContactAvatar extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  _initials(contact.name),
+                  _initials(person.name),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF0B1633),
-                    fontWeight: FontWeight.w800,
-                  ),
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
               ),
               Positioned(
@@ -767,7 +1034,7 @@ class _FavoriteContactAvatar extends StatelessWidget {
                   width: 16,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: contact.isOnline
+                    color: person.isOnline
                         ? const Color(0xFF22C55E)
                         : const Color(0xFF9EABC0),
                     shape: BoxShape.circle,
@@ -779,28 +1046,224 @@ class _FavoriteContactAvatar extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            contact.name,
+            person.firstName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: const Color(0xFF15203A),
-              fontWeight: FontWeight.w700,
-            ),
+                  color: const Color(0xFF15203A),
+                  fontWeight: FontWeight.w700,
+                ),
           ),
         ],
       ),
     );
   }
+}
 
-  String _initials(String name) {
-    final parts = name.trim().split(' ').where((part) => part.isNotEmpty);
-    final letters = parts.take(2).map((part) => part[0]).join();
-    return letters.toUpperCase();
+class _PersonTile extends StatelessWidget {
+  const _PersonTile({
+    required this.person,
+  });
+
+  final _PersonContact person;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.75),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: person.palette),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _initials(person.name),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ),
+              Positioned(
+                right: -1,
+                bottom: -1,
+                child: Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: person.isOnline
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xFF9EABC0),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  person.name,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${person.role} • ${person.isOnline ? context.l10n.onlineLabel : context.l10n.offlineLabel}',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: const Color(0xFF6E7C97),
+                      ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            person.isFavorite ? Icons.star_rounded : Icons.person_outline_rounded,
+            color: person.isFavorite
+                ? const Color(0xFFF29C62)
+                : const Color(0xFF97A4BC),
+            size: 22,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChatThreadTile extends StatelessWidget {
+  const _ChatThreadTile({
+    required this.thread,
+  });
+
+  final _ChatThread thread;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.75),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: thread.palette),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _initials(thread.name),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ),
+              Positioned(
+                right: -1,
+                bottom: -1,
+                child: Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: thread.isOnline
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xFF9EABC0),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        thread.name,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: const Color(0xFF0B1633),
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
+                    Text(
+                      thread.timeLabel,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: const Color(0xFF97A4BC),
+                          ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  thread.lastMessage,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: const Color(0xFF6E7C97),
+                      ),
+                ),
+              ],
+            ),
+          ),
+          if (thread.unreadCount > 0) ...[
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2B6EF2),
+                borderRadius: BorderRadius.circular(99),
+              ),
+              child: Text(
+                '${thread.unreadCount}',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 
 class _RecentCallTile extends StatelessWidget {
-  const _RecentCallTile({required this.call});
+  const _RecentCallTile({
+    required this.call,
+  });
 
   final _RecentCall call;
 
@@ -818,7 +1281,7 @@ class _RecentCallTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.7),
+        color: Colors.white.withValues(alpha: 0.75),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -837,9 +1300,9 @@ class _RecentCallTile extends StatelessWidget {
                 child: Text(
                   _initials(call.name),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFF0B1633),
-                    fontWeight: FontWeight.w800,
-                  ),
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
               ),
               Positioned(
@@ -859,7 +1322,7 @@ class _RecentCallTile extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -867,11 +1330,11 @@ class _RecentCallTile extends StatelessWidget {
                 Text(
                   call.name,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF0B1633),
-                    fontWeight: FontWeight.w800,
-                  ),
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     Icon(
@@ -886,9 +1349,9 @@ class _RecentCallTile extends StatelessWidget {
                       child: Text(
                         '${call.statusLabel} • ${call.timeLabel}',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: statusColor,
-                          fontWeight: FontWeight.w500,
-                        ),
+                              color: statusColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ),
                   ],
@@ -901,12 +1364,6 @@ class _RecentCallTile extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _initials(String name) {
-    final parts = name.trim().split(' ').where((part) => part.isNotEmpty);
-    final letters = parts.take(2).map((part) => part[0]).join();
-    return letters.toUpperCase();
   }
 }
 
@@ -942,7 +1399,10 @@ class _SoftCircleButton extends StatelessWidget {
 }
 
 class _ProfileAvatarButton extends StatelessWidget {
-  const _ProfileAvatarButton({required this.label, required this.onPressed});
+  const _ProfileAvatarButton({
+    required this.label,
+    required this.onPressed,
+  });
 
   final String label;
   final VoidCallback onPressed;
@@ -966,18 +1426,12 @@ class _ProfileAvatarButton extends StatelessWidget {
         child: Text(
           _initials(label),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: const Color(0xFF0B1633),
-            fontWeight: FontWeight.w800,
-          ),
+                color: const Color(0xFF0B1633),
+                fontWeight: FontWeight.w800,
+              ),
         ),
       ),
     );
-  }
-
-  String _initials(String name) {
-    final parts = name.trim().split(' ').where((part) => part.isNotEmpty);
-    final letters = parts.take(2).map((part) => part[0]).join();
-    return letters.isEmpty ? 'P' : letters.toUpperCase();
   }
 }
 
@@ -1012,31 +1466,58 @@ class _SheetStatusRow extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
         ),
         const SizedBox(width: 10),
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: const Color(0xFF6E7C97),
-            fontWeight: FontWeight.w600,
-          ),
+                color: const Color(0xFF6E7C97),
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ],
     );
   }
 }
 
-class _FavoriteContact {
-  const _FavoriteContact({
+class _PersonContact {
+  const _PersonContact({
     required this.name,
-    required this.palette,
+    required this.role,
     required this.isOnline,
+    required this.palette,
+    this.isFavorite = false,
   });
 
   final String name;
-  final List<Color> palette;
+  final String role;
   final bool isOnline;
+  final List<Color> palette;
+  final bool isFavorite;
+
+  String get firstName => name.split(' ').first;
+}
+
+class _ChatThread {
+  const _ChatThread({
+    required this.name,
+    required this.lastMessage,
+    required this.timeLabel,
+    required this.unreadCount,
+    required this.isOnline,
+    required this.palette,
+  });
+
+  final String name;
+  final String lastMessage;
+  final String timeLabel;
+  final int unreadCount;
+  final bool isOnline;
+  final List<Color> palette;
 }
 
 class _RecentCall {
@@ -1057,3 +1538,9 @@ class _RecentCall {
 }
 
 enum _RecentCallType { voice, video }
+
+String _initials(String name) {
+  final parts = name.trim().split(' ').where((part) => part.isNotEmpty);
+  final letters = parts.take(2).map((part) => part[0]).join();
+  return letters.isEmpty ? 'P' : letters.toUpperCase();
+}
