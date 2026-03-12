@@ -55,8 +55,8 @@ class CallControls extends StatelessWidget {
                     child: _DockButton(
                       icon: isMuted ? Icons.mic_off_rounded : Icons.mic_none,
                       label: isMuted
-                          ? context.l10n.unmuteAction
-                          : context.l10n.muteAction,
+                          ? context.S.unmuteAction
+                          : context.S.muteAction,
                       onTap: onToggleMute,
                     ),
                   ),
@@ -66,8 +66,8 @@ class CallControls extends StatelessWidget {
                           ? Icons.videocam_outlined
                           : Icons.videocam_off_outlined,
                       label: isVideoEnabled
-                          ? context.l10n.cameraOffAction
-                          : context.l10n.cameraOnAction,
+                          ? context.S.cameraOffAction
+                          : context.S.cameraOnAction,
                       onTap: onToggleCamera,
                     ),
                   ),
@@ -75,21 +75,21 @@ class CallControls extends StatelessWidget {
                   Expanded(
                     child: _DockButton(
                       icon: Icons.ios_share_outlined,
-                      label: context.l10n.shareAction,
+                      label: context.S.shareAction,
                       onTap: onShare,
                     ),
                   ),
                   Expanded(
                     child: _DockButton(
                       icon: Icons.auto_awesome_outlined,
-                      label: context.l10n.filtersAction,
+                      label: context.S.filtersAction,
                       onTap: onOpenFilters,
                     ),
                   ),
                   Expanded(
                     child: _DockButton(
                       icon: Icons.chat_bubble_outline_rounded,
-                      label: context.l10n.chatAction,
+                      label: context.S.chatAction,
                       onTap: onOpenChat,
                     ),
                   ),

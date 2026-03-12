@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,7 +69,9 @@ class _HomePageState extends State<HomePage> {
     return 'You';
   }
 
-  List<DeviceContactEntity> _favoriteContacts(List<DeviceContactEntity> contacts) {
+  List<DeviceContactEntity> _favoriteContacts(
+    List<DeviceContactEntity> contacts,
+  ) {
     final starredContacts = contacts
         .where((contact) => contact.isFavorite)
         .toList(growable: false);
@@ -130,7 +134,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<_RecentCall> _recentCalls(BuildContext context) {
-    final l10n = context.l10n;
+    final l10n = context.S;
 
     return [
       _RecentCall(
@@ -166,25 +170,25 @@ class _HomePageState extends State<HomePage> {
 
   String _tabTitle(BuildContext context) {
     return switch (_selectedTabIndex) {
-      1 => context.l10n.peopleTitle,
-      2 => context.l10n.callsTitle,
-      _ => context.l10n.messagesTitle,
+      1 => context.S.peopleTitle,
+      2 => context.S.callsTitle,
+      _ => context.S.messagesTitle,
     };
   }
 
   String _tabSubtitle(BuildContext context) {
     return switch (_selectedTabIndex) {
-      1 => context.l10n.peopleSubtitle,
-      2 => context.l10n.callsSubtitle,
-      _ => context.l10n.homeSubtitle,
+      1 => context.S.peopleSubtitle,
+      2 => context.S.callsSubtitle,
+      _ => context.S.homeSubtitle,
     };
   }
 
   String _searchHint(BuildContext context) {
     return switch (_selectedTabIndex) {
-      1 => context.l10n.searchPeopleHint,
-      2 => context.l10n.searchCallsHint,
-      _ => context.l10n.searchConversationsHint,
+      1 => context.S.searchPeopleHint,
+      2 => context.S.searchCallsHint,
+      _ => context.S.searchConversationsHint,
     };
   }
 
@@ -209,198 +213,199 @@ class _HomePageState extends State<HomePage> {
       },
       builder: (context, state) {
         final cubit = context.read<SettingsCubit>();
+        final contactsState = context.watch<DeviceContactsCubit>().state;
         final isBusy =
             state.isLoading || state.isSaving || state.isCheckingServer;
-        final people = _people(state);
-        final favorites = people.where((person) => person.isFavorite).toList();
-        final filteredPeople = people
-            .where(
-              (person) => person.name.toLowerCase().contains(
-                    _searchQuery.toLowerCase(),
-                  ),
-            )
-            .toList();
-        final filteredFavorites = favorites
-            .where(
-              (person) => person.name.toLowerCase().contains(
-                    _searchQuery.toLowerCase(),
-                  ),
-            )
-            .toList();
+        final favoriteContacts = _favoriteContacts(contactsState.contacts);
+        final filteredPeople = _filterContacts(contactsState.contacts);
+        final filteredFavorites = _filterContacts(favoriteContacts);
         final filteredThreads = _chatThreads(state)
             .where(
               (thread) =>
                   thread.name.toLowerCase().contains(
-                        _searchQuery.toLowerCase(),
-                      ) ||
+                    _searchQuery.toLowerCase(),
+                  ) ||
                   thread.lastMessage.toLowerCase().contains(
-                        _searchQuery.toLowerCase(),
-                      ),
+                    _searchQuery.toLowerCase(),
+                  ),
             )
             .toList();
         final filteredCalls = _recentCalls(context)
             .where(
               (call) =>
                   call.name.toLowerCase().contains(
-                        _searchQuery.toLowerCase(),
-                      ) ||
+                    _searchQuery.toLowerCase(),
+                  ) ||
                   call.statusLabel.toLowerCase().contains(
-                        _searchQuery.toLowerCase(),
-                      ),
+                    _searchQuery.toLowerCase(),
+                  ),
             )
             .toList();
 
-        return Scaffold(
-          backgroundColor: const Color(0xFFF4F5F7),
-          body: DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFF6F7FA), Color(0xFFF1F3F8)],
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            backgroundColor: const Color(0xFFF4F5F7),
+            body: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFF6F7FA), Color(0xFFF1F3F8)],
+                ),
               ),
-            ),
-            child: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isWide = constraints.maxWidth >= 900;
+              child: SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth >= 900;
 
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      isWide ? 36 : 24,
-                      24,
-                      isWide ? 36 : 24,
-                      140,
-                    ),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 1024),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _HeaderSection(
-                              title: _tabTitle(context),
-                              subtitle: _tabSubtitle(context),
-                              displayName: _currentDisplayName(state),
-                              onEditPressed: () => _showSetupSheet(context, cubit),
-                              onAvatarPressed: () =>
-                                  _showSetupSheet(context, cubit),
-                            ),
-                            const SizedBox(height: 24),
-                            _SearchField(
-                              hintText: _searchHint(context),
-                              onChanged: (value) {
-                                setState(() {
-                                  _searchQuery = value;
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            if (_selectedTabIndex == 0)
-                              _ChatsTabContent(
-                                serverUrl: _signalingUrlController.text.isEmpty
-                                    ? state.settings.signalingUrl
-                                    : _signalingUrlController.text,
-                                serverReachable: state.serverReachable,
-                                threads: filteredThreads,
-                                onCheckPressed: isBusy
-                                    ? null
-                                    : () => cubit.checkServer(
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.fromLTRB(
+                        isWide ? 36 : 24,
+                        24,
+                        isWide ? 36 : 24,
+                        140,
+                      ),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1024),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _HeaderSection(
+                                title: _tabTitle(context),
+                                subtitle: _tabSubtitle(context),
+                                displayName: _currentDisplayName(state),
+                                onEditPressed: () =>
+                                    _showSetupSheet(context, cubit),
+                                onAvatarPressed: () =>
+                                    _showSetupSheet(context, cubit),
+                              ),
+                              const SizedBox(height: 24),
+                              _SearchField(
+                                hintText: _searchHint(context),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _searchQuery = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              if (_selectedTabIndex == 0)
+                                _ChatsTabContent(
+                                  serverUrl:
+                                      _signalingUrlController.text.isEmpty
+                                      ? state.settings.signalingUrl
+                                      : _signalingUrlController.text,
+                                  serverReachable: state.serverReachable,
+                                  threads: filteredThreads,
+                                  onCheckPressed: isBusy
+                                      ? null
+                                      : () => cubit.checkServer(
                                           _signalingUrlController.text,
                                         ),
-                                onOpenSetup: () => _showSetupSheet(context, cubit),
-                              ),
-                            if (_selectedTabIndex == 1)
-                              _PeopleTabContent(
-                                favorites: filteredFavorites,
-                                people: filteredPeople,
-                              ),
-                            if (_selectedTabIndex == 2)
-                              _CallsTabContent(calls: filteredCalls),
-                          ],
+                                  onOpenSetup: () =>
+                                      _showSetupSheet(context, cubit),
+                                ),
+                              if (_selectedTabIndex == 1)
+                                _PeopleTabContent(
+                                  state: contactsState,
+                                  favorites: filteredFavorites,
+                                  people: filteredPeople,
+                                  onRetry: () =>
+                                      _loadDeviceContactsIfNeeded(force: true),
+                                ),
+                              if (_selectedTabIndex == 2)
+                                _CallsTabContent(calls: filteredCalls),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: isBusy
-                ? null
-                : () async {
-                    final saved = await cubit.saveSettings(
-                      displayName: _displayNameController.text,
-                      signalingUrl: _signalingUrlController.text,
-                      startWithVideo: _startWithVideo,
                     );
-
-                    if (!saved || !context.mounted) {
-                      return;
-                    }
-
-                    await context.router.push(const CallRoomRoute());
                   },
-            backgroundColor: const Color(0xFF2B6EF2),
-            foregroundColor: Colors.white,
-            extendedPadding: const EdgeInsets.symmetric(
-              horizontal: 22,
-              vertical: 12,
+                ),
+              ),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            elevation: 6,
-            icon: state.isSaving
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.video_call_rounded, size: 22),
-            label: Text(
-              context.l10n.startVideoCallCta,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _selectedTabIndex,
-            onDestinationSelected: (index) {
-              if (index == 3) {
-                _showSetupSheet(context, cubit);
-                return;
-              }
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: isBusy
+                  ? null
+                  : () async {
+                      final saved = await cubit.saveSettings(
+                        displayName: _displayNameController.text,
+                        signalingUrl: _signalingUrlController.text,
+                        startWithVideo: _startWithVideo,
+                      );
 
-              setState(() {
-                _selectedTabIndex = index;
-              });
-            },
-            destinations: [
-              NavigationDestination(
-                icon: const Icon(Icons.chat_bubble_outline_rounded),
-                label: context.l10n.chatsTab,
+                      if (!saved || !context.mounted) {
+                        return;
+                      }
+
+                      await context.router.push(const CallRoomRoute());
+                    },
+              backgroundColor: const Color(0xFF2B6EF2),
+              foregroundColor: Colors.white,
+              extendedPadding: const EdgeInsets.symmetric(
+                horizontal: 22,
+                vertical: 12,
               ),
-              NavigationDestination(
-                icon: const Icon(Icons.groups_rounded),
-                label: context.l10n.peopleTab,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
               ),
-              NavigationDestination(
-                icon: const Icon(Icons.call_outlined),
-                label: context.l10n.callsTab,
+              elevation: 6,
+              icon: state.isSaving
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.video_call_rounded, size: 22),
+              label: Text(
+                context.S.startVideoCallCta,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              NavigationDestination(
-                icon: const Icon(Icons.settings_outlined),
-                label: context.l10n.settingsTab,
-              ),
-            ],
+            ),
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: _selectedTabIndex,
+              onDestinationSelected: (index) {
+                if (index == 3) {
+                  _showSetupSheet(context, cubit);
+                  return;
+                }
+
+                if (index == 1) {
+                  _loadDeviceContactsIfNeeded();
+                }
+
+                setState(() {
+                  _selectedTabIndex = index;
+                });
+              },
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.chat_bubble_outline_rounded),
+                  label: context.S.chatsTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.groups_rounded),
+                  label: context.S.peopleTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.call_outlined),
+                  label: context.S.callsTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.settings_outlined),
+                  label: context.S.settingsTab,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -411,7 +416,7 @@ class _HomePageState extends State<HomePage> {
     BuildContext context,
     SettingsCubit cubit,
   ) async {
-    final l10n = context.l10n;
+    final l10n = context.S;
     var sheetVideo = _startWithVideo;
 
     await showModalBottomSheet<void>(
@@ -524,8 +529,8 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: isBusy
                                       ? null
                                       : () => cubit.checkServer(
-                                            _signalingUrlController.text,
-                                          ),
+                                          _signalingUrlController.text,
+                                        ),
                                   icon: state.isCheckingServer
                                       ? const SizedBox(
                                           width: 18,
@@ -544,17 +549,22 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: isBusy
                                       ? null
                                       : () async {
-                                          final navigator = Navigator.of(context);
-                                          final messenger =
-                                              ScaffoldMessenger.of(this.context);
-                                          final saved =
-                                              await cubit.saveSettings(
-                                            displayName:
-                                                _displayNameController.text,
-                                            signalingUrl:
-                                                _signalingUrlController.text,
-                                            startWithVideo: sheetVideo,
+                                          final navigator = Navigator.of(
+                                            context,
                                           );
+                                          final messenger =
+                                              ScaffoldMessenger.of(
+                                                this.context,
+                                              );
+                                          final saved = await cubit
+                                              .saveSettings(
+                                                displayName:
+                                                    _displayNameController.text,
+                                                signalingUrl:
+                                                    _signalingUrlController
+                                                        .text,
+                                                startWithVideo: sheetVideo,
+                                              );
 
                                           if (!saved || !mounted) {
                                             return;
@@ -565,8 +575,7 @@ class _HomePageState extends State<HomePage> {
                                             ..hideCurrentSnackBar()
                                             ..showSnackBar(
                                               SnackBar(
-                                                content:
-                                                    Text(l10n.saveSuccess),
+                                                content: Text(l10n.saveSuccess),
                                               ),
                                             );
                                         },
@@ -625,18 +634,18 @@ class _HeaderSection extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0B1633),
-                      height: 1,
-                    ),
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0B1633),
+                  height: 1,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: const Color(0xFF6E7C97),
-                      height: 1.35,
-                    ),
+                  color: const Color(0xFF6E7C97),
+                  height: 1.35,
+                ),
               ),
             ],
           ),
@@ -649,10 +658,7 @@ class _HeaderSection extends StatelessWidget {
           onPressed: onEditPressed,
         ),
         const SizedBox(width: 12),
-        _ProfileAvatarButton(
-          label: displayName,
-          onPressed: onAvatarPressed,
-        ),
+        _ProfileAvatarButton(label: displayName, onPressed: onAvatarPressed),
       ],
     );
   }
@@ -685,7 +691,7 @@ class _ChatsTabContent extends StatelessWidget {
           onOpenSetup: onOpenSetup,
         ),
         const SizedBox(height: 26),
-        _SectionLabel(title: context.l10n.conversationsTitle),
+        _SectionLabel(title: context.S.conversationsTitle),
         const SizedBox(height: 14),
         _SoftPanel(
           child: Column(
@@ -704,33 +710,76 @@ class _ChatsTabContent extends StatelessWidget {
 
 class _PeopleTabContent extends StatelessWidget {
   const _PeopleTabContent({
+    required this.state,
     required this.favorites,
     required this.people,
+    required this.onRetry,
   });
 
-  final List<_PersonContact> favorites;
-  final List<_PersonContact> people;
+  final DeviceContactsState state;
+  final List<DeviceContactEntity> favorites;
+  final List<DeviceContactEntity> people;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
+    if (state.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 48),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (state.permissionDenied) {
+      return _InfoStateCard(
+        title: context.S.contactsPermissionTitle,
+        body: context.S.contactsPermissionBody,
+        actionLabel: context.S.grantAccessAction,
+        icon: Icons.contact_phone_outlined,
+        onPressed: onRetry,
+      );
+    }
+
+    if (state.errorMessage != null) {
+      return _InfoStateCard(
+        title: context.S.contactsErrorTitle,
+        body: state.errorMessage!,
+        actionLabel: context.S.retryAction,
+        icon: Icons.warning_amber_rounded,
+        onPressed: onRetry,
+      );
+    }
+
+    if (people.isEmpty) {
+      return _InfoStateCard(
+        title: context.S.contactsEmptyTitle,
+        body: context.S.contactsEmptyBody,
+        actionLabel: context.S.retryAction,
+        icon: Icons.perm_contact_calendar_outlined,
+        onPressed: onRetry,
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionLabel(title: context.l10n.favoritesTitle),
-        const SizedBox(height: 14),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final person in favorites) ...[
-                _FavoriteContactAvatar(person: person),
-                const SizedBox(width: 18),
+        if (favorites.isNotEmpty) ...[
+          _SectionLabel(title: context.S.favoritesTitle),
+          const SizedBox(height: 14),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final person in favorites) ...[
+                  _FavoriteContactAvatar(person: person),
+                  const SizedBox(width: 18),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-        const SizedBox(height: 26),
-        _SectionLabel(title: context.l10n.allPeopleTitle),
+          const SizedBox(height: 26),
+        ],
+        _SectionLabel(title: context.S.allPeopleTitle),
         const SizedBox(height: 14),
         _SoftPanel(
           child: Column(
@@ -748,9 +797,7 @@ class _PeopleTabContent extends StatelessWidget {
 }
 
 class _CallsTabContent extends StatelessWidget {
-  const _CallsTabContent({
-    required this.calls,
-  });
+  const _CallsTabContent({required this.calls});
 
   final List<_RecentCall> calls;
 
@@ -759,7 +806,7 @@ class _CallsTabContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionLabel(title: context.l10n.recentCallsTitle),
+        _SectionLabel(title: context.S.recentCallsTitle),
         const SizedBox(height: 14),
         _SoftPanel(
           child: Column(
@@ -777,10 +824,7 @@ class _CallsTabContent extends StatelessWidget {
 }
 
 class _SearchField extends StatelessWidget {
-  const _SearchField({
-    required this.hintText,
-    required this.onChanged,
-  });
+  const _SearchField({required this.hintText, required this.onChanged});
 
   final String hintText;
   final ValueChanged<String> onChanged;
@@ -803,10 +847,7 @@ class _SearchField extends StatelessWidget {
             size: 26,
             color: Color(0xFF98A5BD),
           ),
-          hintStyle: const TextStyle(
-            color: Color(0xFF73829E),
-            fontSize: 14,
-          ),
+          hintStyle: const TextStyle(color: Color(0xFF73829E), fontSize: 14),
         ),
       ),
     );
@@ -828,7 +869,7 @@ class _ServerPrepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
+    final l10n = context.S;
     final statusText = switch (serverReachable) {
       true => l10n.serverOnline,
       false => l10n.serverOffline,
@@ -858,9 +899,9 @@ class _ServerPrepCard extends StatelessWidget {
         children: [
           Text(
             l10n.serverPrepTitle,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Text(
@@ -886,9 +927,9 @@ class _ServerPrepCard extends StatelessWidget {
                     Text(
                       statusText,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: const Color(0xFF0B1633),
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: const Color(0xFF0B1633),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -896,8 +937,8 @@ class _ServerPrepCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFF7A879E),
-                          ),
+                        color: const Color(0xFF7A879E),
+                      ),
                     ),
                   ],
                 ),
@@ -928,9 +969,7 @@ class _ServerPrepCard extends StatelessWidget {
 }
 
 class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({
-    required this.title,
-  });
+  const _SectionLabel({required this.title});
 
   final String title;
 
@@ -939,18 +978,16 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       title.toUpperCase(),
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: const Color(0xFF6E7C97),
-            letterSpacing: 1.2,
-            fontWeight: FontWeight.w700,
-          ),
+        color: const Color(0xFF6E7C97),
+        letterSpacing: 1.2,
+        fontWeight: FontWeight.w700,
+      ),
     );
   }
 }
 
 class _SoftPanel extends StatelessWidget {
-  const _SoftPanel({
-    required this.child,
-  });
+  const _SoftPanel({required this.child});
 
   final Widget child;
 
@@ -967,12 +1004,83 @@ class _SoftPanel extends StatelessWidget {
   }
 }
 
-class _FavoriteContactAvatar extends StatelessWidget {
-  const _FavoriteContactAvatar({
-    required this.person,
+class _InfoStateCard extends StatelessWidget {
+  const _InfoStateCard({
+    required this.title,
+    required this.body,
+    required this.actionLabel,
+    required this.icon,
+    required this.onPressed,
   });
 
-  final _PersonContact person;
+  final String title;
+  final String body;
+  final String actionLabel;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x100B1633),
+            blurRadius: 24,
+            offset: Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE7EEF9),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, color: const Color(0xFF2B6EF2), size: 28),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: const Color(0xFF0B1633),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            body,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: const Color(0xFF6E7C97),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 18),
+          FilledButton.icon(
+            onPressed: onPressed,
+            icon: const Icon(Icons.refresh_rounded),
+            label: Text(actionLabel),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FavoriteContactAvatar extends StatelessWidget {
+  const _FavoriteContactAvatar({required this.person});
+
+  final DeviceContactEntity person;
 
   @override
   Widget build(BuildContext context) {
@@ -983,24 +1091,18 @@ class _FavoriteContactAvatar extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                width: 62,
-                height: 62,
+              DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(colors: person.palette),
                   border: Border.all(
                     color: const Color(0xFF2B6EF2).withValues(alpha: 0.9),
                     width: 3,
                   ),
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  _initials(person.name),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: const Color(0xFF0B1633),
-                        fontWeight: FontWeight.w800,
-                      ),
+                child: _ContactAvatar(
+                  name: person.displayName,
+                  avatarBytes: person.avatarBytes,
+                  size: 62,
                 ),
               ),
               Positioned(
@@ -1010,11 +1112,15 @@ class _FavoriteContactAvatar extends StatelessWidget {
                   width: 16,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: person.isOnline
-                        ? const Color(0xFF22C55E)
-                        : const Color(0xFF9EABC0),
+                    color: const Color(0xFF2B6EF2),
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 3),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.star_rounded,
+                    size: 8,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -1026,9 +1132,9 @@ class _FavoriteContactAvatar extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF15203A),
-                  fontWeight: FontWeight.w700,
-                ),
+              color: const Color(0xFF15203A),
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -1037,14 +1143,16 @@ class _FavoriteContactAvatar extends StatelessWidget {
 }
 
 class _PersonTile extends StatelessWidget {
-  const _PersonTile({
-    required this.person,
-  });
+  const _PersonTile({required this.person});
 
-  final _PersonContact person;
+  final DeviceContactEntity person;
 
   @override
   Widget build(BuildContext context) {
+    final secondaryLabel = person.subtitle.isEmpty
+        ? context.S.contactNoDetailsLabel
+        : person.subtitle;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
@@ -1053,41 +1161,10 @@ class _PersonTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(colors: person.palette),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  _initials(person.name),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color(0xFF0B1633),
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-              ),
-              Positioned(
-                right: -1,
-                bottom: -1,
-                child: Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: person.isOnline
-                        ? const Color(0xFF22C55E)
-                        : const Color(0xFF9EABC0),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 3),
-                  ),
-                ),
-              ),
-            ],
+          _ContactAvatar(
+            name: person.displayName,
+            avatarBytes: person.avatarBytes,
+            size: 54,
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -1095,24 +1172,24 @@ class _PersonTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  person.name,
+                  person.displayName,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: const Color(0xFF0B1633),
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: const Color(0xFF0B1633),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${person.role} • ${person.isOnline ? context.l10n.onlineLabel : context.l10n.offlineLabel}',
+                  secondaryLabel,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color(0xFF6E7C97),
-                      ),
+                    color: const Color(0xFF6E7C97),
+                  ),
                 ),
               ],
             ),
           ),
           Icon(
-            person.isFavorite ? Icons.star_rounded : Icons.person_outline_rounded,
+            person.isFavorite ? Icons.star_rounded : Icons.call_outlined,
             color: person.isFavorite
                 ? const Color(0xFFF29C62)
                 : const Color(0xFF97A4BC),
@@ -1124,10 +1201,56 @@ class _PersonTile extends StatelessWidget {
   }
 }
 
-class _ChatThreadTile extends StatelessWidget {
-  const _ChatThreadTile({
-    required this.thread,
+class _ContactAvatar extends StatelessWidget {
+  const _ContactAvatar({
+    required this.name,
+    required this.avatarBytes,
+    required this.size,
   });
+
+  final String name;
+  final Uint8List? avatarBytes;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = _avatarPalette(name);
+
+    if (avatarBytes != null) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: MemoryImage(avatarBytes!),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(colors: palette),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        _initials(name),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          color: const Color(0xFF0B1633),
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _ChatThreadTile extends StatelessWidget {
+  const _ChatThreadTile({required this.thread});
 
   final _ChatThread thread;
 
@@ -1155,9 +1278,9 @@ class _ChatThreadTile extends StatelessWidget {
                 child: Text(
                   _initials(thread.name),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color(0xFF0B1633),
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: const Color(0xFF0B1633),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               Positioned(
@@ -1188,16 +1311,16 @@ class _ChatThreadTile extends StatelessWidget {
                       child: Text(
                         thread.name,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: const Color(0xFF0B1633),
-                              fontWeight: FontWeight.w800,
-                            ),
+                          color: const Color(0xFF0B1633),
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                     Text(
                       thread.timeLabel,
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: const Color(0xFF97A4BC),
-                          ),
+                        color: const Color(0xFF97A4BC),
+                      ),
                     ),
                   ],
                 ),
@@ -1207,8 +1330,8 @@ class _ChatThreadTile extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color(0xFF6E7C97),
-                      ),
+                    color: const Color(0xFF6E7C97),
+                  ),
                 ),
               ],
             ),
@@ -1224,9 +1347,9 @@ class _ChatThreadTile extends StatelessWidget {
               child: Text(
                 '${thread.unreadCount}',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -1237,9 +1360,7 @@ class _ChatThreadTile extends StatelessWidget {
 }
 
 class _RecentCallTile extends StatelessWidget {
-  const _RecentCallTile({
-    required this.call,
-  });
+  const _RecentCallTile({required this.call});
 
   final _RecentCall call;
 
@@ -1276,9 +1397,9 @@ class _RecentCallTile extends StatelessWidget {
                 child: Text(
                   _initials(call.name),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color(0xFF0B1633),
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: const Color(0xFF0B1633),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               Positioned(
@@ -1306,9 +1427,9 @@ class _RecentCallTile extends StatelessWidget {
                 Text(
                   call.name,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: const Color(0xFF0B1633),
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: const Color(0xFF0B1633),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -1325,9 +1446,9 @@ class _RecentCallTile extends StatelessWidget {
                       child: Text(
                         '${call.statusLabel} • ${call.timeLabel}',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: statusColor,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          color: statusColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -1375,10 +1496,7 @@ class _SoftCircleButton extends StatelessWidget {
 }
 
 class _ProfileAvatarButton extends StatelessWidget {
-  const _ProfileAvatarButton({
-    required this.label,
-    required this.onPressed,
-  });
+  const _ProfileAvatarButton({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
@@ -1402,9 +1520,9 @@ class _ProfileAvatarButton extends StatelessWidget {
         child: Text(
           _initials(label),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: const Color(0xFF0B1633),
-                fontWeight: FontWeight.w800,
-              ),
+            color: const Color(0xFF0B1633),
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
     );
@@ -1442,40 +1560,19 @@ class _SheetStatusRow extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 10),
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF6E7C97),
-                fontWeight: FontWeight.w600,
-              ),
+            color: const Color(0xFF6E7C97),
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
   }
-}
-
-class _PersonContact {
-  const _PersonContact({
-    required this.name,
-    required this.role,
-    required this.isOnline,
-    required this.palette,
-    this.isFavorite = false,
-  });
-
-  final String name;
-  final String role;
-  final bool isOnline;
-  final List<Color> palette;
-  final bool isFavorite;
-
-  String get firstName => name.split(' ').first;
 }
 
 class _ChatThread {
@@ -1519,4 +1616,18 @@ String _initials(String name) {
   final parts = name.trim().split(' ').where((part) => part.isNotEmpty);
   final letters = parts.take(2).map((part) => part[0]).join();
   return letters.isEmpty ? 'P' : letters.toUpperCase();
+}
+
+List<Color> _avatarPalette(String seed) {
+  const palettes = [
+    [Color(0xFFFFE1D4), Color(0xFFF8B486)],
+    [Color(0xFFFFD8B2), Color(0xFFFFA35D)],
+    [Color(0xFFFFE7B7), Color(0xFFFFC15C)],
+    [Color(0xFFFFE1C9), Color(0xFFD9B188)],
+    [Color(0xFFF1DFC2), Color(0xFFD1AF79)],
+    [Color(0xFFE7E4FF), Color(0xFFB6B3FF)],
+    [Color(0xFFD7ECFF), Color(0xFF84BDFC)],
+  ];
+  final index = seed.hashCode.abs() % palettes.length;
+  return palettes[index];
 }

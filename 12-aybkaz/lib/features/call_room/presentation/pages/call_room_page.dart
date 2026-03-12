@@ -77,143 +77,148 @@ class _CallRoomPageState extends State<CallRoomPage> {
         final statusNote =
             session.statusMessage ?? _statusSubtitle(context, session.status);
         final remoteLabel =
-            session.remoteDisplayName ?? context.l10n.remoteVideoLabel;
+            session.remoteDisplayName ?? context.S.remoteVideoLabel;
 
-        return Scaffold(
-          backgroundColor: Colors.black,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: VideoStage(
-                  localRenderer: cubit.localRenderer,
-                  remoteRenderer: cubit.remoteRenderer,
-                  localLabel: context.l10n.localVideoLabel,
-                  remoteLabel: remoteLabel,
-                  waitingLabel: context.l10n.waitingPeerLabel,
-                  videoOffLabel: context.l10n.videoOffLabel,
-                  isLocalVideoEnabled: session.localVideoEnabled,
-                  hasRemoteStream: cubit.remoteRenderer.srcObject != null,
-                  statusLabel: statusNote,
-                  filterOverlay: _selectedFilter.tint,
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            backgroundColor: Colors.black,
+            body: Stack(
+              children: [
+                Positioned.fill(
+                  child: VideoStage(
+                    localRenderer: cubit.localRenderer,
+                    remoteRenderer: cubit.remoteRenderer,
+                    localLabel: context.S.localVideoLabel,
+                    remoteLabel: remoteLabel,
+                    waitingLabel: context.S.waitingPeerLabel,
+                    videoOffLabel: context.S.videoOffLabel,
+                    isLocalVideoEnabled: session.localVideoEnabled,
+                    hasRemoteStream: cubit.remoteRenderer.srcObject != null,
+                    statusLabel: statusNote,
+                    filterOverlay: _selectedFilter.tint,
+                  ),
                 ),
-              ),
-              Positioned.fill(
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            _GlassIconButton(
-                              icon: Icons.arrow_back_ios_new_rounded,
-                              onTap: () async {
-                                await cubit.leave();
-                                if (context.mounted) {
-                                  context.router.maybePop();
-                                }
-                              },
-                            ),
-                            const Spacer(),
-                            _GlassIconButton(
-                              icon: Icons.tune_rounded,
-                              onTap: () {
-                                _showFilterSheet(context);
-                              },
-                            ),
-                            const SizedBox(width: 12),
-                            _GlassIconButton(
-                              icon: Icons.info_outline_rounded,
-                              onTap: () {
-                                _showDetailsSheet(context, state);
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: _TimerBadge(
-                            elapsedLabel: _formatDuration(_elapsed),
+                Positioned.fill(
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              _GlassIconButton(
+                                icon: Icons.arrow_back_ios_new_rounded,
+                                onTap: () async {
+                                  await cubit.leave();
+                                  if (context.mounted) {
+                                    context.router.maybePop();
+                                  }
+                                },
+                              ),
+                              const Spacer(),
+                              _GlassIconButton(
+                                icon: Icons.tune_rounded,
+                                onTap: () {
+                                  _showFilterSheet(context);
+                                },
+                              ),
+                              const SizedBox(width: 12),
+                              _GlassIconButton(
+                                icon: Icons.info_outline_rounded,
+                                onTap: () {
+                                  _showDetailsSheet(context, state);
+                                },
+                              ),
+                            ],
                           ),
-                        ),
-                        const Spacer(),
-                        if (session.status == CallConnectionStatus.failure ||
-                            session.status ==
-                                CallConnectionStatus.disconnected ||
-                            session.status == CallConnectionStatus.roomFull)
+                          const SizedBox(height: 18),
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 14),
-                              child: FilledButton.tonalIcon(
-                                onPressed: state.isJoining ? null : cubit.retry,
-                                icon: const Icon(Icons.refresh_rounded),
-                                label: Text(context.l10n.retryAction),
-                              ),
+                            child: _TimerBadge(
+                              elapsedLabel: _formatDuration(_elapsed),
                             ),
                           ),
-                        CallControls(
-                          isMuted: !session.localAudioEnabled,
-                          isVideoEnabled: session.localVideoEnabled,
-                          onToggleMute: cubit.toggleMicrophone,
-                          onToggleCamera: cubit.toggleCamera,
-                          onShare: () => _copyPeerId(context, state),
-                          onOpenFilters: () => _showFilterSheet(context),
-                          onOpenChat: () => _showChatSheet(context, state),
-                          onLeave: () async {
-                            await cubit.leave();
-                            if (context.mounted) {
-                              context.router.maybePop();
-                            }
-                          },
-                        ),
-                      ],
+                          const Spacer(),
+                          if (session.status == CallConnectionStatus.failure ||
+                              session.status ==
+                                  CallConnectionStatus.disconnected ||
+                              session.status == CallConnectionStatus.roomFull)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 14),
+                                child: FilledButton.tonalIcon(
+                                  onPressed: state.isJoining
+                                      ? null
+                                      : cubit.retry,
+                                  icon: const Icon(Icons.refresh_rounded),
+                                  label: Text(context.S.retryAction),
+                                ),
+                              ),
+                            ),
+                          CallControls(
+                            isMuted: !session.localAudioEnabled,
+                            isVideoEnabled: session.localVideoEnabled,
+                            onToggleMute: cubit.toggleMicrophone,
+                            onToggleCamera: cubit.toggleCamera,
+                            onShare: () => _copyPeerId(context, state),
+                            onOpenFilters: () => _showFilterSheet(context),
+                            onOpenChat: () => _showChatSheet(context, state),
+                            onLeave: () async {
+                              await cubit.leave();
+                              if (context.mounted) {
+                                context.router.maybePop();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              if (state.isJoining)
-                const Positioned(
-                  top: 0,
+                if (state.isJoining)
+                  const Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: LinearProgressIndicator(),
+                  ),
+                Positioned(
+                  top: 122,
                   left: 0,
                   right: 0,
-                  child: LinearProgressIndicator(),
-                ),
-              Positioned(
-                top: 122,
-                left: 0,
-                right: 0,
-                child: IgnorePointer(
-                  child: Center(
-                    child: AnimatedOpacity(
-                      opacity: session.status == CallConnectionStatus.inCall
-                          ? 0.0
-                          : 1.0,
-                      duration: const Duration(milliseconds: 250),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Text(
-                          statusText,
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                              ),
+                  child: IgnorePointer(
+                    child: Center(
+                      child: AnimatedOpacity(
+                        opacity: session.status == CallConnectionStatus.inCall
+                            ? 0.0
+                            : 1.0,
+                        duration: const Duration(milliseconds: 250),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Text(
+                            statusText,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -227,7 +232,7 @@ class _CallRoomPageState extends State<CallRoomPage> {
       return;
     }
 
-    final copiedMessage = context.l10n.copyPeerIdSuccess;
+    final copiedMessage = context.S.copyPeerIdSuccess;
     final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: value));
     if (!context.mounted) {
@@ -276,9 +281,9 @@ class _CallRoomPageState extends State<CallRoomPage> {
                       child: ChatPanel(
                         messages: state.session.chatMessages,
                         controller: _messageController,
-                        title: context.l10n.chatTitle,
-                        hint: context.l10n.chatHint,
-                        emptyLabel: context.l10n.emptyChat,
+                        title: context.S.chatTitle,
+                        hint: context.S.chatHint,
+                        emptyLabel: context.S.emptyChat,
                         onSend: () async {
                           final text = _messageController.text;
                           if (text.trim().isEmpty) {
@@ -286,7 +291,7 @@ class _CallRoomPageState extends State<CallRoomPage> {
                               ..hideCurrentSnackBar()
                               ..showSnackBar(
                                 SnackBar(
-                                  content: Text(context.l10n.callEmptyMessage),
+                                  content: Text(context.S.callEmptyMessage),
                                 ),
                               );
                             return;
@@ -339,7 +344,7 @@ class _CallRoomPageState extends State<CallRoomPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      context.l10n.detailsAction,
+                      context.S.detailsAction,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             color: Colors.white,
@@ -348,17 +353,17 @@ class _CallRoomPageState extends State<CallRoomPage> {
                     ),
                     const SizedBox(height: 18),
                     _DetailRow(
-                      label: context.l10n.displayNameLabel,
+                      label: context.S.displayNameLabel,
                       value: state.settings?.displayName ?? 'Guest',
                     ),
                     _DetailRow(
-                      label: context.l10n.serverUrlLabel,
+                      label: context.S.serverUrlLabel,
                       value: serverUrl,
                     ),
                     _DetailRow(label: 'Local peer ID', value: localId),
                     _DetailRow(label: 'Remote peer ID', value: remoteId),
                     _DetailRow(
-                      label: context.l10n.callTitle,
+                      label: context.S.callTitle,
                       value: _statusSubtitle(context, state.session.status),
                     ),
                   ],
@@ -408,7 +413,7 @@ class _CallRoomPageState extends State<CallRoomPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            context.l10n.callFiltersTitle,
+                            context.S.callFiltersTitle,
                             style: Theme.of(context).textTheme.headlineSmall
                                 ?.copyWith(
                                   color: const Color(0xFF0B1633),
@@ -507,7 +512,7 @@ class _CallRoomPageState extends State<CallRoomPage> {
                           borderRadius: BorderRadius.circular(24),
                         ),
                       ),
-                      child: Text(context.l10n.applyFilterAction),
+                      child: Text(context.S.applyFilterAction),
                     ),
                   ],
                 ),
@@ -529,42 +534,42 @@ class _CallRoomPageState extends State<CallRoomPage> {
   String _statusText(BuildContext context, CallConnectionStatus status) {
     switch (status) {
       case CallConnectionStatus.idle:
-        return context.l10n.statusIdle;
+        return context.S.statusIdle;
       case CallConnectionStatus.connecting:
-        return context.l10n.statusConnecting;
+        return context.S.statusConnecting;
       case CallConnectionStatus.waitingPeer:
-        return context.l10n.statusWaitingPeer;
+        return context.S.statusWaitingPeer;
       case CallConnectionStatus.negotiating:
-        return context.l10n.statusNegotiating;
+        return context.S.statusNegotiating;
       case CallConnectionStatus.inCall:
-        return context.l10n.statusInCall;
+        return context.S.statusInCall;
       case CallConnectionStatus.disconnected:
-        return context.l10n.statusDisconnected;
+        return context.S.statusDisconnected;
       case CallConnectionStatus.roomFull:
-        return context.l10n.statusRoomFull;
+        return context.S.statusRoomFull;
       case CallConnectionStatus.failure:
-        return context.l10n.statusFailure;
+        return context.S.statusFailure;
     }
   }
 
   String _statusSubtitle(BuildContext context, CallConnectionStatus status) {
     switch (status) {
       case CallConnectionStatus.idle:
-        return context.l10n.statusIdle;
+        return context.S.statusIdle;
       case CallConnectionStatus.connecting:
-        return context.l10n.callSubtitleConnecting;
+        return context.S.callSubtitleConnecting;
       case CallConnectionStatus.waitingPeer:
-        return context.l10n.callSubtitleWaiting;
+        return context.S.callSubtitleWaiting;
       case CallConnectionStatus.negotiating:
-        return context.l10n.callSubtitleNegotiating;
+        return context.S.callSubtitleNegotiating;
       case CallConnectionStatus.inCall:
-        return context.l10n.callSubtitleInCall;
+        return context.S.callSubtitleInCall;
       case CallConnectionStatus.disconnected:
-        return context.l10n.callSubtitleDisconnected;
+        return context.S.callSubtitleDisconnected;
       case CallConnectionStatus.roomFull:
-        return context.l10n.callSubtitleRoomFull;
+        return context.S.callSubtitleRoomFull;
       case CallConnectionStatus.failure:
-        return context.l10n.callSubtitleFailure;
+        return context.S.callSubtitleFailure;
     }
   }
 }
@@ -699,10 +704,10 @@ enum _CallFilter {
 
   String label(BuildContext context) {
     return switch (this) {
-      _CallFilter.none => context.l10n.filterNone,
-      _CallFilter.blur => context.l10n.filterBlur,
-      _CallFilter.mono => context.l10n.filterMono,
-      _CallFilter.warm => context.l10n.filterWarm,
+      _CallFilter.none => context.S.filterNone,
+      _CallFilter.blur => context.S.filterBlur,
+      _CallFilter.mono => context.S.filterMono,
+      _CallFilter.warm => context.S.filterWarm,
     };
   }
 }

@@ -32,19 +32,16 @@ class DeviceContactsCubit extends Cubit<DeviceContactsState> {
     );
 
     final permissionResult = await _requestDeviceContactsPermissionUseCase();
-    final isGranted = permissionResult.fold<bool?>(
-      (failure) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            hasLoaded: true,
-            errorMessage: failure.message,
-          ),
-        );
-        return null;
-      },
-      (granted) => granted,
-    );
+    final isGranted = permissionResult.fold<bool?>((failure) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          hasLoaded: true,
+          errorMessage: failure.message,
+        ),
+      );
+      return null;
+    }, (granted) => granted);
 
     if (isGranted == null) {
       return;

@@ -6,9 +6,7 @@ import '../../domain/repositories/device_contacts_repository.dart';
 import '../datasources/device_contacts_datasource.dart';
 
 class DeviceContactsRepositoryImpl implements DeviceContactsRepository {
-  const DeviceContactsRepositoryImpl({
-    required this.dataSource,
-  });
+  const DeviceContactsRepositoryImpl({required this.dataSource});
 
   final DeviceContactsDataSource dataSource;
 

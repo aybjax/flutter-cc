@@ -32,14 +32,14 @@ class SettingsForm extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l10n.homeTitle,
+              context.S.homeTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              context.l10n.homeSubtitle,
+              context.S.homeSubtitle,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: const Color(0xFF475569),
               ),
@@ -49,8 +49,8 @@ class SettingsForm extends StatelessWidget {
               controller: displayNameController,
               enabled: !isBusy,
               decoration: InputDecoration(
-                labelText: context.l10n.displayNameLabel,
-                hintText: context.l10n.displayNameHint,
+                labelText: context.S.displayNameLabel,
+                hintText: context.S.displayNameHint,
                 prefixIcon: const Icon(Icons.person_outline),
               ),
             ),
@@ -60,9 +60,9 @@ class SettingsForm extends StatelessWidget {
               enabled: !isBusy,
               keyboardType: TextInputType.url,
               decoration: InputDecoration(
-                labelText: context.l10n.serverUrlLabel,
-                hintText: context.l10n.serverUrlHint,
-                helperText: context.l10n.serverUrlHelper,
+                labelText: context.S.serverUrlLabel,
+                hintText: context.S.serverUrlHint,
+                helperText: context.S.serverUrlHelper,
                 prefixIcon: const Icon(Icons.lan_outlined),
               ),
             ),
@@ -71,7 +71,7 @@ class SettingsForm extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               value: startWithVideo,
               onChanged: isBusy ? null : onStartWithVideoChanged,
-              title: Text(context.l10n.startWithVideoLabel),
+              title: Text(context.S.startWithVideoLabel),
             ),
             if (serverIsReachable != null) ...[
               const SizedBox(height: 8),
@@ -102,8 +102,8 @@ class SettingsForm extends StatelessWidget {
                     Flexible(
                       child: Text(
                         serverIsReachable
-                            ? context.l10n.serverOnline
-                            : context.l10n.serverOffline,
+                            ? context.S.serverOnline
+                            : context.S.serverOffline,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: serverIsReachable
                               ? const Color(0xFF166534)
