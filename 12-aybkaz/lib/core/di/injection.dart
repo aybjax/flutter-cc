@@ -12,6 +12,13 @@ import '../../features/call_room/domain/usecases/toggle_camera_usecase.dart';
 import '../../features/call_room/domain/usecases/toggle_microphone_usecase.dart';
 import '../../features/call_room/domain/usecases/watch_call_session_usecase.dart';
 import '../../features/call_room/presentation/cubit/call_room_cubit.dart';
+import '../../features/device_contacts/data/datasources/device_contacts_datasource.dart';
+import '../../features/device_contacts/data/datasources/device_contacts_datasource_impl.dart';
+import '../../features/device_contacts/data/repositories/device_contacts_repository_impl.dart';
+import '../../features/device_contacts/domain/repositories/device_contacts_repository.dart';
+import '../../features/device_contacts/domain/usecases/get_device_contacts_usecase.dart';
+import '../../features/device_contacts/domain/usecases/request_device_contacts_permission_usecase.dart';
+import '../../features/device_contacts/presentation/cubit/device_contacts_cubit.dart';
 import '../../features/settings/data/datasources/server_probe_remote_datasource.dart';
 import '../../features/settings/data/datasources/settings_local_datasource.dart';
 import '../../features/settings/data/repositories/settings_repository_impl.dart';
@@ -67,6 +74,30 @@ Future<void> configureDependencies() async {
       getUserSettingsUseCase: getIt<GetUserSettingsUseCase>(),
       saveUserSettingsUseCase: getIt<SaveUserSettingsUseCase>(),
       probeServerUseCase: getIt<ProbeServerUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<DeviceContactsDataSource>(
+    DeviceContactsDataSourceImpl.new,
+  );
+  getIt.registerLazySingleton<DeviceContactsRepository>(
+    () => DeviceContactsRepositoryImpl(
+      dataSource: getIt<DeviceContactsDataSource>(),
+    ),
+  );
+  getIt.registerFactory<RequestDeviceContactsPermissionUseCase>(
+    () => RequestDeviceContactsPermissionUseCase(
+      getIt<DeviceContactsRepository>(),
+    ),
+  );
+  getIt.registerFactory<GetDeviceContactsUseCase>(
+    () => GetDeviceContactsUseCase(getIt<DeviceContactsRepository>()),
+  );
+  getIt.registerFactory<DeviceContactsCubit>(
+    () => DeviceContactsCubit(
+      getDeviceContactsUseCase: getIt<GetDeviceContactsUseCase>(),
+      requestDeviceContactsPermissionUseCase:
+          getIt<RequestDeviceContactsPermissionUseCase>(),
     ),
   );
 
